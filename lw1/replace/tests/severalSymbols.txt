@@ -1,0 +1,1 @@
+severalSymbolsInput.txt severalSymbolsOutput.txt ab cd
