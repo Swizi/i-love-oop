@@ -5,17 +5,29 @@ namespace replace
 {
     internal class Program
     {
-        static void Main( string[] args )
+        static int Main( string[] args )
         {
+            if ( args.Length == 2 )
+            {
+                return 0;
+            }
+
+            if ( args.Length < 3 )
+            {
+                Console.WriteLine( "Неверное количество аргументов" );
+                return 1;
+            }
+
             string inputFilePath = args[ 0 ];
             string outputFilePath = args[ 1 ];
-            string searchString = args.Length > 2 ? args[2] : "";
-            string replaceString = args.Length > 3 ? args[ 3 ]: "";
+            string searchString = args.Length > 2 ? args[ 2 ] : "";
+            string replaceString = args.Length > 3 ? args[ 3 ] : "";
 
-            StreamWriter outputStream = new StreamWriter( outputFilePath );
-            if (File.Exists(inputFilePath))
+            if ( File.Exists( inputFilePath ) )
             {
+                StreamWriter outputStream = new StreamWriter( outputFilePath );
                 StreamReader inputStream = new StreamReader( inputFilePath );
+
                 while ( !inputStream.EndOfStream )
                 {
                     string inputLine = inputStream.ReadLine();
@@ -24,11 +36,15 @@ namespace replace
                     outputStream.WriteLine( replacedLine );
                 }
                 inputStream.Close();
-            } else
-            {
-                outputStream.WriteLine( "Файл с данными не существует" );
+                outputStream.Close();
             }
-            outputStream.Close();
+            else
+            {
+                Console.WriteLine( "Файл с данными не существует" );
+                return 1;
+            }
+
+            return 0;
         }
     }
 }
