@@ -27,10 +27,15 @@ echo Test 4 passed
 %PROGRAM% %TEST_DIR%\\notExistsInput.txt %TEST_DIR%\\notExistsOutput.txt  1 && goto err
 echo Test 5 passed
 
+:: Нагрузочный
+%PROGRAM% %TEST_DIR%\\heavyInput.txt %TEST_DIR%\\heavyOutput.txt A BB || goto err
+fc %TEST_DIR%\\heavyOutput.txt %TEST_DIR%\\heavy-output.txt || goto err
+echo Test 6 passed
+
 :: Стандартный
 %PROGRAM% %TEST_DIR%\\standardInput.txt %TEST_DIR%\\standardOutput.txt ma mama || goto err
 fc %TEST_DIR%\\standardOutput.txt %TEST_DIR%\\standard-output.txt || goto err
-echo Test 6 passed
+echo Test 7 passed
 
 echo All tests passed
 exit /B 0

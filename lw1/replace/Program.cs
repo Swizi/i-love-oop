@@ -5,6 +5,21 @@ namespace replace
 {
     internal class Program
     {
+        static private string FindAndReplace( string sourceString, string searchString, string replaceString )
+        {
+            string resultString = sourceString;
+            int occurenceIndex = sourceString.IndexOf( searchString );
+
+            while ( occurenceIndex != -1 )
+            {
+                resultString = resultString.Remove( occurenceIndex, searchString.Length );
+                resultString = resultString.Insert( occurenceIndex, replaceString );
+
+                occurenceIndex = resultString.IndexOf( searchString );
+            }
+
+            return resultString;
+        }
         static int Main( string[] args )
         {
             if ( args.Length == 2 )
@@ -31,7 +46,7 @@ namespace replace
                 while ( !inputStream.EndOfStream )
                 {
                     string inputLine = inputStream.ReadLine();
-                    string replacedLine = inputLine.Replace( searchString, replaceString );
+                    string replacedLine = FindAndReplace( inputLine, searchString, replaceString );
 
                     outputStream.WriteLine( replacedLine );
                 }
