@@ -1,63 +1,65 @@
 ﻿using System;
 using System.IO;
 
-namespace replace
+namespace Replace
 {
     internal class Program
     {
-        static private string FindAndReplace( string sourceString, string searchString, string replaceString )
+        private static bool IsFileCanBeOpened(string filePath, FileAccess access)
         {
-            string resultString = sourceString;
-            int occurenceIndex = sourceString.IndexOf( searchString );
-
-            while ( occurenceIndex != -1 )
+            try
             {
-                resultString = resultString.Remove( occurenceIndex, searchString.Length );
-                resultString = resultString.Insert( occurenceIndex, replaceString );
-
-                occurenceIndex = resultString.IndexOf( searchString );
+                File.Open(filePath, FileMode.Open, access).Dispose();
+                return true;
             }
-
-            return resultString;
+            catch (IOException)
+            {
+                return false;
+            }
         }
-        static int Main( string[] args )
+
+        static int Main(string[] args)
         {
-            if ( args.Length == 2 )
+            if (args.Length == 2)
             {
                 return 0;
             }
 
-            if ( args.Length < 3 )
+            if (args.Length < 3)
             {
-                Console.WriteLine( "Неверное количество аргументов" );
+                Console.WriteLine("Not enough arguments. Params should be: <input file name> <output file name> <search string> <replace string>");
                 return 1;
             }
 
-            string inputFilePath = args[ 0 ];
-            string outputFilePath = args[ 1 ];
-            string searchString = args.Length > 2 ? args[ 2 ] : "";
-            string replaceString = args.Length > 3 ? args[ 3 ] : "";
+            string inputFilePath = args[0];
+            string outputFilePath = args[1];
+            string searchString = args.Length > 2 ? args[2] : "";
+            string replaceString = args.Length > 3 ? args[3] : "";
 
-            if ( File.Exists( inputFilePath ) )
+            if (!IsFileCanBeOpened(inputFilePath, FileAccess.Read))
             {
-                StreamWriter outputStream = new StreamWriter( outputFilePath );
-                StreamReader inputStream = new StreamReader( inputFilePath );
-
-                while ( !inputStream.EndOfStream )
-                {
-                    string inputLine = inputStream.ReadLine();
-                    string replacedLine = FindAndReplace( inputLine, searchString, replaceString );
-
-                    outputStream.WriteLine( replacedLine );
-                }
-                inputStream.Close();
-                outputStream.Close();
-            }
-            else
-            {
-                Console.WriteLine( "Файл с данными не существует" );
+                Console.WriteLine("Input file can not be opened");
                 return 1;
             }
+
+            if (!IsFileCanBeOpened(inputFilePath, FileAccess.Write))
+            {
+                Console.WriteLine("Output file can not be opened");
+                return 1;
+            }
+
+            StreamWriter outputStream = new StreamWriter(outputFilePath);
+            StreamReader inputStream = new StreamReader(inputFilePath);
+
+            while (!inputStream.EndOfStream)
+            {
+                string inputLine = inputStream.ReadLine();
+                string replacedLine = inputLine.Replace(searchString, replaceString);
+
+                outputStream.WriteLine(replacedLine);
+            }
+            inputStream.Close();
+            outputStream.Close();
 
             return 0;
         }

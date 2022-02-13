@@ -1,40 +1,39 @@
 @echo off
 
 set PROGRAM="%~1"
-set TEST_DIR="D:\\i-love-oop\\lw1\\replace\\tests"
 
-:: Пустые значения
-%PROGRAM% %TEST_DIR%\\emptyInput.txt %TEST_DIR%\\emptyOutput.txt    || goto err
-fc %TEST_DIR%\\emptyOutput.txt %TEST_DIR%\\empty-output.txt || goto err
+:: Empty values
+%PROGRAM% %~dp0\\emptyInput.txt %~dp0\\emptyOutput.txt    || goto err
+fc %~dp0\emptyOutput.txt %~dp0\\empty-output.txt || goto err
 echo Test 1 passed
 
-:: Замена одного символа
-%PROGRAM% %TEST_DIR%\\oneSymbolInput.txt %TEST_DIR%\\oneSymbolOutput.txt a b || goto err
-fc %TEST_DIR%\\oneSymbolOutput.txt %TEST_DIR%\\oneSymbol-output.txt || goto err
+:: One symbol
+%PROGRAM% %~dp0\\oneSymbolInput.txt %~dp0\\oneSymbolOutput.txt a b || goto err
+fc %~dp0\\oneSymbolOutput.txt %~dp0\\oneSymbol-output.txt || goto err
 echo Test 2 passed
 
-:: Замена нескольких символов
-%PROGRAM% %TEST_DIR%\\severalSymbolsInput.txt %TEST_DIR%\\severalSymbolsOutput.txt ab cd || goto err
-fc %TEST_DIR%\\severalSymbolsOutput.txt %TEST_DIR%\\severalSymbols-output.txt || goto err
+:: Several symbols
+%PROGRAM% %~dp0\\severalSymbolsInput.txt %~dp0\\severalSymbolsOutput.txt ab cd || goto err
+fc %~dp0\\severalSymbolsOutput.txt %~dp0\\severalSymbols-output.txt || goto err
 echo Test 3 passed
 
-:: Поиск пустой строки
-%PROGRAM% %TEST_DIR%\\emptySearchInput.txt %TEST_DIR%\\emptySearchOutput.txt  1 || goto err
-fc %TEST_DIR%\\emptySearchOutput.txt %TEST_DIR%\\emptySearch-output.txt || goto err
+:: Empty search string
+%PROGRAM% %~dp0\\emptySearchInput.txt %~dp0\\emptySearchOutput.txt  1 || goto err
+fc %~dp0\\emptySearchOutput.txt %~dp0\\emptySearch-output.txt || goto err
 echo Test 4 passed
 
-:: Не существует файла ввода
-%PROGRAM% %TEST_DIR%\\notExistsInput.txt %TEST_DIR%\\notExistsOutput.txt  1 && goto err
+:: Not exists input file
+%PROGRAM% %~dp0\\notExistsInput.txt %~dp0\\notExistsOutput.txt  1 && goto err
 echo Test 5 passed
 
-:: Нагрузочный
-%PROGRAM% %TEST_DIR%\\heavyInput.txt %TEST_DIR%\\heavyOutput.txt A BB || goto err
-fc %TEST_DIR%\\heavyOutput.txt %TEST_DIR%\\heavy-output.txt || goto err
+:: Heavy(1 billion letters)
+%PROGRAM% %~dp0\\heavyInput.txt %~dp0\\heavyOutput.txt A BB || goto err
+fc %~dp0\\heavyOutput.txt %~dp0\\heavy-output.txt || goto err
 echo Test 6 passed
 
-:: Стандартный
-%PROGRAM% %TEST_DIR%\\standardInput.txt %TEST_DIR%\\standardOutput.txt ma mama || goto err
-fc %TEST_DIR%\\standardOutput.txt %TEST_DIR%\\standard-output.txt || goto err
+:: Standard
+%PROGRAM% %~dp0\\standardInput.txt %~dp0\\standardOutput.txt ma mama || goto err
+fc %~dp0\\standardOutput.txt %~dp0\\standard-output.txt || goto err
 echo Test 7 passed
 
 echo All tests passed
