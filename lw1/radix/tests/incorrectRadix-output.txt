@@ -1,1 +1,1 @@
-Неправильная исходная система счисления
+Incorrect source notation

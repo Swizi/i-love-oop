@@ -1,1 +1,1 @@
-Недостаточное количество аргументов
+Incorret arguments count. Params should be: <source notation> <destination notation> <value>
