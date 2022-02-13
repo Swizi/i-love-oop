@@ -13,10 +13,15 @@ echo Test 1 passed
 fc %OUT% %~dp0\\incorrectRadix-output.txt || goto err
 echo Test 2 passed
 
+:: Zero
+%PROGRAM% 16 10 0 > %OUT% || goto err
+fc %OUT% %~dp0\\zero-output.txt || goto err
+echo Test 3 passed
+
 :: Standard
 %PROGRAM% 6 15 -54 > %OUT% || goto err
 fc %OUT% %~dp0\\standard-output.txt || goto err
-echo Test 3 passed
+echo Test 4 passed
 
 echo All tests passed
 exit /B 0
