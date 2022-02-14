@@ -1,13 +1,37 @@
 ﻿using System;
 
-namespace radix
+namespace Radix
 {
     internal class Program
     {
         const int MAX_10_BASE_DIGIT = 9;
         const int ZERO_ASCII_CODE = 48;
 
-        static private int StringToInt(ref string str, int radix, ref bool wasError)
+        struct Args
+        {
+            public string sourceNotation;
+            public string destinationNotation;
+            public string value;
+        }
+
+        private static Args? ParseArgs(string[] stringArgs )
+        {
+            Args args = new Args();
+
+            if (stringArgs.Length != 3)
+            {
+                Console.WriteLine( "Incorret arguments count. Params should be: <source notation> <destination notation> <value>" );
+                return null;
+            }
+
+            args.sourceNotation = stringArgs[ 0 ];
+            args.destinationNotation = stringArgs[ 1 ];
+            args.value = stringArgs[ 2 ];
+
+            return args;
+        }
+
+        private static int StringToInt(ref string str, int radix, ref bool wasError)
         {
             wasError = false;
 
@@ -74,7 +98,7 @@ namespace radix
                 }
                 else
                 {
-                    newCh = englishAlphabet[newChNum - MAX_10_BASE_DIGIT + 1];
+                    newCh = englishAlphabet[newChNum - MAX_10_BASE_DIGIT - 1];
                 }
 
                 str += newCh;
@@ -94,27 +118,26 @@ namespace radix
 
         static int Main(string[] args)
         {
-            if (args.Length != 3)
+            Args? parsedArgs = ParseArgs( args );
+            if (parsedArgs == null)
             {
-                Console.WriteLine("Incorret arguments count. Params should be: <source notation> <destination notation> <value>");
                 return 1;
             }
-
-            string source_notation_string = args[0];
-            string destination_notation_string = args[1];
-            int source_notation = Convert.ToInt32(source_notation_string);
-            int destination_notation = Convert.ToInt32(destination_notation_string);
-            string value = args[2];
+            string sourceNotationString = parsedArgs.Value.sourceNotation;
+            string destinationNotationString = parsedArgs.Value.destinationNotation;
+            int sourceNotation = Convert.ToInt32(sourceNotationString);
+            int destinationNotation = Convert.ToInt32(destinationNotationString);
+            string value = parsedArgs.Value.value;
             bool wasError = false;
 
-            int convertedValue = StringToInt(ref value, source_notation, ref wasError);
+            int convertedValue = StringToInt(ref value, sourceNotation, ref wasError);
             if (wasError)
             {
                 Console.WriteLine("Incorrect source notation");
                 return 1;
             }
 
-            string str = IntToString(ref convertedValue, destination_notation, ref wasError);
+            string str = IntToString(ref convertedValue, destinationNotation, ref wasError);
 
             Console.WriteLine(str);
             return 0;
