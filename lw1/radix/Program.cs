@@ -1,11 +1,16 @@
 ﻿using System;
+using System.Collections.Generic;
 
 namespace Radix
 {
     internal class Program
     {
-        const int MAX_10_BASE_DIGIT = 9;
+        const int MIN_RADIX = 2;
+        const int MAX_RADIX = 36;
+        const int MAX_INT_DIGIT = 9;
         const int ZERO_ASCII_CODE = 48;
+
+        const string englishAlphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
 
         struct Args
         {
@@ -14,11 +19,11 @@ namespace Radix
             public string value;
         }
 
-        private static Args? ParseArgs(string[] stringArgs )
+        private static Args? ParseArgs( string[] stringArgs )
         {
             Args args = new Args();
 
-            if (stringArgs.Length != 3)
+            if ( stringArgs.Length != 3 )
             {
                 Console.WriteLine( "Incorret arguments count. Params should be: <source notation> <destination notation> <value>" );
                 return null;
@@ -31,47 +36,59 @@ namespace Radix
             return args;
         }
 
-        private static int StringToInt(ref string str, int radix, ref bool wasError)
+        private static int StringToInt( string str, int radix, ref bool wasError )
         {
             wasError = false;
 
-            int startAlphabetChar = 'A';
+            const int startAlphabetChar = 'A';
             bool isNegative = false;
             int currNum = 0;
 
-            for (int i = 0; i < str.Length; i++)
+            for ( int i = 0; i < str.Length; i++ )
             {
-                int chNum = str[i];
+                int chNum = str[ i ];
                 int currDigitNum = 0;
 
-                if (i == 0 && (str[i] == '-'))
+                if ( i == 0 && ( str[ i ] == '-' ) )
                 {
                     isNegative = true;
                 }
 
-                if (i == 0 && (str[i] == '+') || (str[i] == '-'))
+                if ( i == 0 && ( str[ i ] == '+' ) || ( str[ i ] == '-' ) )
                 {
                     continue;
                 }
 
-                if (!char.IsDigit(str[i]))
+                if ( !char.IsDigit( str[ i ] ) )
                 {
-                    currDigitNum = MAX_10_BASE_DIGIT + 1 + chNum - startAlphabetChar;
+                    currDigitNum = MAX_INT_DIGIT + 1 + chNum - startAlphabetChar;
                 }
                 else
                 {
-                    Int32.TryParse(Convert.ToString(str[i]), out currDigitNum);
+                    currDigitNum = chNum - ZERO_ASCII_CODE;
                 }
 
-                if (radix <= currDigitNum)
+                if ( radix <= currDigitNum )
                 {
                     wasError = true;
+                    return -1;
                 }
 
-                currNum += currDigitNum * Convert.ToInt32(Math.Pow(radix, str.Length - 1 - i));
+                try
+                {
+                    int test = checked(( currNum * radix ) + currDigitNum);
+
+                }
+                catch ( OverflowException )
+                {
+                    wasError = true;
+                    return -1;
+                }
+
+                currNum = ( currNum * radix ) + currDigitNum;
             }
 
-            if (isNegative)
+            if ( isNegative )
             {
                 currNum *= -1;
             }
@@ -79,67 +96,94 @@ namespace Radix
             return currNum;
         }
 
-        static private string IntToString(ref int num, int radix, ref bool wasError)
+        static private string IntToString( int num, int radix, ref bool wasError )
         {
-            char[] englishAlphabet = { 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z' };
-            string str = "";
-            int dividedNum = Math.Abs(num);
-            int newChNum = 0;
-            char newCh = '0';
+            if ( radix < MIN_RADIX || radix > MAX_RADIX )
+            {
+                wasError = true;
+                return "-1";
+            }
+            List<char> stringChars = new List<char>();
+            int unsignedNum = Math.Abs( num );
             wasError = false;
 
             do
             {
-                newChNum = dividedNum % radix;
+                int chNum = 0;
+                char ch = '0';
+                chNum = unsignedNum % radix;
 
-                if (newChNum <= MAX_10_BASE_DIGIT)
+                if ( chNum <= MAX_INT_DIGIT )
                 {
-                    newCh = (char)(newChNum + ZERO_ASCII_CODE);
+                    ch = (char)( chNum + ZERO_ASCII_CODE );
                 }
                 else
                 {
-                    newCh = englishAlphabet[newChNum - MAX_10_BASE_DIGIT - 1];
+                    ch = englishAlphabet[ chNum - MAX_INT_DIGIT - 1 ];
                 }
 
-                str += newCh;
-                dividedNum /= radix;
-            } while (dividedNum != 0);
+                stringChars.Add( ch );
+                unsignedNum /= radix;
+            } while ( unsignedNum != 0 );
 
-            if (num < 0)
+            if ( num < 0 )
             {
-                str += '-';
+                stringChars.Add( '-' );
             }
 
-            char[] charArr = str.ToCharArray();
-            Array.Reverse(charArr);
+            stringChars.Reverse();
 
-            return new string(charArr);
+            return new string( stringChars.ToArray() );
         }
 
-        static int Main(string[] args)
+        static int Main( string[] args )
         {
             Args? parsedArgs = ParseArgs( args );
-            if (parsedArgs == null)
+            if ( parsedArgs == null )
             {
                 return 1;
             }
             string sourceNotationString = parsedArgs.Value.sourceNotation;
             string destinationNotationString = parsedArgs.Value.destinationNotation;
-            int sourceNotation = Convert.ToInt32(sourceNotationString);
-            int destinationNotation = Convert.ToInt32(destinationNotationString);
             string value = parsedArgs.Value.value;
+
+            try
+            {
+                int test = Convert.ToInt32( sourceNotationString );
+            }
+            catch ( OverflowException )
+            {
+                Console.WriteLine( "Source notation is too large" );
+                return 1;
+            }
+            try
+            {
+                int test = Convert.ToInt32( destinationNotationString );
+            }
+            catch ( OverflowException )
+            {
+                Console.WriteLine( "Destination notation is too large" );
+                return 1;
+            }
+            int sourceNotation = Convert.ToInt32( sourceNotationString );
+            int destinationNotation = Convert.ToInt32( destinationNotationString );
             bool wasError = false;
 
-            int convertedValue = StringToInt(ref value, sourceNotation, ref wasError);
-            if (wasError)
+            int convertedValue = StringToInt( value, sourceNotation, ref wasError );
+            if ( wasError )
             {
-                Console.WriteLine("Incorrect source notation");
+                Console.WriteLine( "Can`t convert source value" );
                 return 1;
             }
 
-            string str = IntToString(ref convertedValue, destinationNotation, ref wasError);
+            string str = IntToString( convertedValue, destinationNotation, ref wasError );
+            if ( wasError )
+            {
+                Console.WriteLine( "Incorrect destination notation" );
+                return 1;
+            }
 
-            Console.WriteLine(str);
+            Console.WriteLine( str );
             return 0;
         }
     }

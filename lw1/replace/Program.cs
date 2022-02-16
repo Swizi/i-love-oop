@@ -13,15 +13,15 @@ namespace Replace
             public string replaceString;
         }
 
-        private static Args? ParseArgs( string[] stringArgs )
+        private static Args? ParseProgramArgs( string[] stringArgs )
         {
-            Args args = new Args();
-
             if ( stringArgs.Length < 3 )
             {
                 Console.WriteLine( "Not enough arguments. Params should be: <input file name> <output file name> <search string> <replace string>" );
                 return null;
             }
+
+            Args args = new Args();
 
             args.inputFilePath = stringArgs[ 0 ];
             args.outputFilePath = stringArgs[ 1 ];
@@ -31,11 +31,41 @@ namespace Replace
             return args;
         }
 
+        private static void ReplaceString(Args args)
+        {
+            string inputFilePath = args.inputFilePath;
+            string outputFilePath = args.outputFilePath;
+            string searchString = args.searchString;
+            string replaceString = args.replaceString;
+
+            using ( StreamReader inputStream = new StreamReader( inputFilePath ) )
+            {
+                // inputStream.CanRead()
+                using ( StreamWriter outputStream = new StreamWriter( outputFilePath ) )
+                {
+                    // outputStream.CanWrite()
+                    while ( !inputStream.EndOfStream )
+                    {
+                        string inputLine = inputStream.ReadLine();
+                        string replacedLine = inputLine;
+                        if ( searchString.Length != 0 )
+                        {
+                            // readonly span
+                            replacedLine = inputLine.Replace( searchString, replaceString );
+                        }
+
+                        outputStream.WriteLine( replacedLine );
+                    }
+                }
+            }
+        }
+
         private static bool IsFileCanBeOpened( string filePath, FileAccess access )
         {
             try
             {
                 File.Open( filePath, FileMode.Open, access ).Dispose();
+                
                 return true;
             }
             catch ( IOException )
@@ -43,7 +73,6 @@ namespace Replace
                 return false;
             }
         }
-
         static int Main( string[] args )
         {
             if ( args.Length == 2 )
@@ -51,42 +80,26 @@ namespace Replace
                 return 0;
             }
 
-            Args? parsedArgs = ParseArgs( args );
+            Args? parsedArgs = ParseProgramArgs( args );
 
             if ( parsedArgs == null )
             {
                 return 1;
             }
 
-            string inputFilePath = parsedArgs.Value.inputFilePath;
-            string outputFilePath = parsedArgs.Value.outputFilePath;
-            string searchString = parsedArgs.Value.searchString;
-            string replaceString = parsedArgs.Value.replaceString;
-
-            if ( !IsFileCanBeOpened( inputFilePath, FileAccess.Read ) )
+            if ( !IsFileCanBeOpened( parsedArgs.Value.inputFilePath, FileAccess.Read ) )
             {
                 Console.WriteLine( "Input file can not be opened" );
                 return 1;
             }
 
-            if ( !IsFileCanBeOpened( outputFilePath, FileAccess.Write ) )
+            if ( !IsFileCanBeOpened( parsedArgs.Value.outputFilePath, FileAccess.Write ) )
             {
                 Console.WriteLine( "Output file can not be opened" );
                 return 1;
             }
 
-            StreamWriter outputStream = new StreamWriter( outputFilePath );
-            StreamReader inputStream = new StreamReader( inputFilePath );
-
-            while ( !inputStream.EndOfStream )
-            {
-                string inputLine = inputStream.ReadLine();
-                string replacedLine = inputLine.Replace( searchString, replaceString );
-
-                outputStream.WriteLine( replacedLine );
-            }
-            inputStream.Close();
-            outputStream.Close();
+            ReplaceString( parsedArgs.Value );
 
             return 0;
         }
