@@ -1,0 +1,1 @@
+Can`t calculate inversed matrix for input matrix

@@ -77,7 +77,6 @@ namespace Radix
                 try
                 {
                     int test = checked(( currNum * radix ) + currDigitNum);
-
                 }
                 catch ( OverflowException )
                 {

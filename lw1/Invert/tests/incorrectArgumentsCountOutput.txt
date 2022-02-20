@@ -1,0 +1,1 @@
+Incorret arguments count. Params should be: <matrix file>
