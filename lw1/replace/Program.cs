@@ -40,17 +40,14 @@ namespace Replace
 
             using ( StreamReader inputStream = new StreamReader( inputFilePath ) )
             {
-                // inputStream.CanRead()
                 using ( StreamWriter outputStream = new StreamWriter( outputFilePath ) )
                 {
-                    // outputStream.CanWrite()
                     while ( !inputStream.EndOfStream )
                     {
                         string inputLine = inputStream.ReadLine();
                         string replacedLine = inputLine;
                         if ( searchString.Length != 0 )
                         {
-                            // readonly span
                             replacedLine = inputLine.Replace( searchString, replaceString );
                         }
 

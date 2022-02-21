@@ -1,0 +1,1 @@
+Incorrect arguments count. Params should be: <input file name> <output file name>
