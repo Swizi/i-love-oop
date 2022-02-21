@@ -1,35 +1,63 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 
 namespace Fill
 {
     internal class Program
     {
-        const int MAX_IMAGE_LENGTH = 100;
+        const int MAX_IMAGE_WIDTH = 100;
+        const int MAX_IMAGE_HEIGHT = 100;
 
         struct Args
         {
             public string inputFilePath;
             public string outputFilePath;
+            public bool isValid;
         }
 
         struct CellPosition
         {
             public int rowIndex;
             public int columnIndex;
+            public bool isValid()
+            {
+                return rowIndex != -1 && columnIndex != -1;
+            }
         }
 
-        private static Args? ParseArgs( string[] stringArgs )
+        static int Main( string[] args )
         {
+            Args parsedArgs = ParseArgs( args );
+
+            if ( !parsedArgs.isValid )
+            {
+                return 1;
+            }
+
+            string inputFilePath = parsedArgs.inputFilePath;
+            string outputFilePath = parsedArgs.outputFilePath;
+
+            char[][] image = GetImageFromFile( inputFilePath );
+
+            FillImage( ref image );
+
+            PrintImageToFile( image, outputFilePath );
+
+            return 0;
+        }
+
+        private static Args ParseArgs( string[] stringArgs )
+        {
+            Args args = new Args();
+            args.isValid = true;
+
             if ( stringArgs.Length != 2 )
             {
                 Console.WriteLine( "Incorrect arguments count. Params should be: <input file name> <output file name>" );
-                return null;
+                args.isValid = false;
+                return args;
             }
-
-            Args args = new Args();
 
             args.inputFilePath = stringArgs[ 0 ];
             args.outputFilePath = stringArgs[ 1 ];
@@ -37,42 +65,26 @@ namespace Fill
             if ( !File.Exists( args.inputFilePath ) )
             {
                 Console.WriteLine( "Input file is not exists" );
-                return null;
+                args.isValid = false;
+                return args;
             }
 
             return args;
         }
 
-        private static void InitializeRow( ref char[][] image, int rowLength, int rowIndex )
+        private static void InitializeRow( ref List<char[]> image, int rowLength )
         {
-
             char[] row = new char[ rowLength ];
             for ( int columnIndex = 0; columnIndex < rowLength; columnIndex++ )
             {
                 row[ columnIndex ] = ' ';
             }
-            image[ rowIndex ] = row;
+            image.Add( row );
         }
 
         private static char[][] GetImageFromFile( string inputFilePath )
         {
-            int rowsCount = 0;
-
-            using ( StreamReader inputStream = new StreamReader( inputFilePath ) )
-            {
-                while ( !inputStream.EndOfStream )
-                {
-                    rowsCount++;
-                    string inputLine = inputStream.ReadLine();
-                }
-            }
-
-            if ( rowsCount > MAX_IMAGE_LENGTH )
-            {
-                rowsCount = MAX_IMAGE_LENGTH;
-            }
-
-            char[][] image = new char[ rowsCount ][];
+            List<char[]> image = new List<char[]>();
             int rowIndex = -1;
 
             using ( StreamReader inputStream = new StreamReader( inputFilePath ) )
@@ -82,12 +94,17 @@ namespace Fill
                     rowIndex++;
                     string inputLine = inputStream.ReadLine();
                     int rowLength = inputLine.Length;
-                    if ( inputLine.Length > MAX_IMAGE_LENGTH )
+                    if ( rowIndex >= MAX_IMAGE_HEIGHT )
                     {
-                        rowLength = MAX_IMAGE_LENGTH;
+                        break;
                     }
 
-                    InitializeRow( ref image, rowLength, rowIndex );
+                    if ( inputLine.Length >= MAX_IMAGE_WIDTH )
+                    {
+                        rowLength = MAX_IMAGE_WIDTH;
+                    }
+
+                    InitializeRow( ref image, rowLength );
 
                     for ( int columnIndex = 0; columnIndex < rowLength; columnIndex++ )
                     {
@@ -96,47 +113,40 @@ namespace Fill
                 }
             }
 
-            return image;
+            return image.ToArray();
         }
 
-        private static CellPosition FindStartCell( ref char[][] image, CellPosition lastStartCellPosition )
+        private static Queue<CellPosition> FindStartCells( ref char[][] image )
         {
-            CellPosition startCellPosition = new CellPosition();
-            startCellPosition.rowIndex = -1;
-            startCellPosition.columnIndex = -1;
-            bool isFoundStartCell = false;
-            int lastStartCellPositionRowIndex = lastStartCellPosition.rowIndex;
+            Queue<CellPosition> startCellPositions = new Queue<CellPosition>();
 
-            if ( lastStartCellPosition.rowIndex == -1 && lastStartCellPosition.columnIndex == -1 )
-            {
-                lastStartCellPositionRowIndex = 0;
-            }
-
-            for ( int rowIndex = lastStartCellPositionRowIndex; rowIndex < image.Length; rowIndex++ )
+            for ( int rowIndex = 0; rowIndex < image.Length; rowIndex++ )
             {
                 for ( int columnIndex = 0; columnIndex < image[ rowIndex ].Length; columnIndex++ )
                 {
-                    if ( image[ rowIndex ][ columnIndex ] == 'O' && lastStartCellPosition.rowIndex != rowIndex && lastStartCellPosition.columnIndex != columnIndex )
+                    if ( image[ rowIndex ][ columnIndex ] == 'O' )
                     {
-                        startCellPosition.rowIndex = rowIndex;
-                        startCellPosition.columnIndex = columnIndex;
-
-                        isFoundStartCell = true;
+                        CellPosition foundStartPosition = new CellPosition();
+                        foundStartPosition.rowIndex = rowIndex;
+                        foundStartPosition.columnIndex = columnIndex;
+                        startCellPositions.Enqueue( foundStartPosition );
                     }
-
-                    if ( isFoundStartCell )
-                    {
-                        break;
-                    }
-                }
-
-                if ( isFoundStartCell )
-                {
-                    break;
                 }
             }
 
-            return startCellPosition;
+            return startCellPositions;
+        }
+
+        private static void CheckCell( int rowIndex, int columnIndex, ref char[][] image, ref Queue<CellPosition> fillQueue )
+        {
+            if ( rowIndex >= 0 && rowIndex < image.Length && columnIndex >= 0 && columnIndex < image[ rowIndex ].Length && image[ rowIndex ][ columnIndex ] == ' ' )
+            {
+                CellPosition newCellPosition = new CellPosition();
+                newCellPosition.rowIndex = rowIndex;
+                newCellPosition.columnIndex = columnIndex;
+                image[ newCellPosition.rowIndex ][ newCellPosition.columnIndex ] = '.';
+                fillQueue.Enqueue( newCellPosition );
+            }
         }
 
         private static void FillAroundCell( ref char[][] image, CellPosition startCellPosition )
@@ -153,103 +163,36 @@ namespace Fill
                 // 6 7              8
 
                 // 1
-                if ( cellPosition.rowIndex - 1 >= 0 && cellPosition.columnIndex - 1 >= 0 && image[ cellPosition.rowIndex - 1 ][ cellPosition.columnIndex - 1 ] == ' ' )
-                {
-                    CellPosition newCellPosition = new CellPosition();
-                    newCellPosition.rowIndex = cellPosition.rowIndex - 1;
-                    newCellPosition.columnIndex = cellPosition.columnIndex - 1;
-                    image[ newCellPosition.rowIndex ][ newCellPosition.columnIndex ] = '.';
-                    fillQueue.Enqueue( newCellPosition );
-                }
-
+                CheckCell( cellPosition.rowIndex - 1, cellPosition.columnIndex - 1, ref image, ref fillQueue );
                 // 2
-                if ( cellPosition.rowIndex - 1 >= 0 && image[ cellPosition.rowIndex - 1 ][ cellPosition.columnIndex ] == ' ' )
-                {
-                    CellPosition newCellPosition = new CellPosition();
-                    newCellPosition.rowIndex = cellPosition.rowIndex - 1;
-                    newCellPosition.columnIndex = cellPosition.columnIndex;
-                    image[ newCellPosition.rowIndex ][ newCellPosition.columnIndex ] = '.';
-                    fillQueue.Enqueue( newCellPosition );
-                }
-
+                CheckCell( cellPosition.rowIndex - 1, cellPosition.columnIndex, ref image, ref fillQueue );
                 // 3
-                if ( cellPosition.rowIndex - 1 >= 0 && cellPosition.columnIndex + 1 < image[ cellPosition.rowIndex - 1 ].Length && image[ cellPosition.rowIndex - 1 ][ cellPosition.columnIndex + 1 ] == ' ' )
-                {
-                    CellPosition newCellPosition = new CellPosition();
-                    newCellPosition.rowIndex = cellPosition.rowIndex - 1;
-                    newCellPosition.columnIndex = cellPosition.columnIndex + 1;
-                    image[ newCellPosition.rowIndex ][ newCellPosition.columnIndex ] = '.';
-                    fillQueue.Enqueue( newCellPosition );
-                }
-
+                CheckCell( cellPosition.rowIndex - 1, cellPosition.columnIndex + 1, ref image, ref fillQueue );
                 // 4
-                if ( cellPosition.columnIndex - 1 >= 0 && image[ cellPosition.rowIndex ][ cellPosition.columnIndex - 1 ] == ' ' )
-                {
-                    CellPosition newCellPosition = new CellPosition();
-                    newCellPosition.rowIndex = cellPosition.rowIndex;
-                    newCellPosition.columnIndex = cellPosition.columnIndex - 1;
-                    image[ newCellPosition.rowIndex ][ newCellPosition.columnIndex ] = '.';
-                    fillQueue.Enqueue( newCellPosition );
-                }
-
+                CheckCell( cellPosition.rowIndex, cellPosition.columnIndex - 1, ref image, ref fillQueue );
                 // 5
-                if ( cellPosition.columnIndex + 1 < image[ cellPosition.rowIndex ].Length && image[ cellPosition.rowIndex ][ cellPosition.columnIndex + 1 ] == ' ' )
-                {
-                    CellPosition newCellPosition = new CellPosition();
-                    newCellPosition.rowIndex = cellPosition.rowIndex;
-                    newCellPosition.columnIndex = cellPosition.columnIndex + 1;
-                    image[ newCellPosition.rowIndex ][ newCellPosition.columnIndex ] = '.';
-                    fillQueue.Enqueue( newCellPosition );
-                }
-
+                CheckCell( cellPosition.rowIndex, cellPosition.columnIndex + 1, ref image, ref fillQueue );
                 // 6
-                if ( cellPosition.rowIndex + 1 < image.Length && cellPosition.columnIndex - 1 >= 0 && image[ cellPosition.rowIndex + 1 ][ cellPosition.columnIndex - 1 ] == ' ' )
-                {
-                    CellPosition newCellPosition = new CellPosition();
-                    newCellPosition.rowIndex = cellPosition.rowIndex + 1;
-                    newCellPosition.columnIndex = cellPosition.columnIndex - 1;
-                    image[ newCellPosition.rowIndex ][ newCellPosition.columnIndex ] = '.';
-                    fillQueue.Enqueue( newCellPosition );
-                }
-
+                CheckCell( cellPosition.rowIndex + 1, cellPosition.columnIndex - 1, ref image, ref fillQueue );
                 // 7
-                if ( cellPosition.rowIndex + 1 < image.Length && image[ cellPosition.rowIndex + 1 ][ cellPosition.columnIndex ] == ' ' )
-                {
-                    CellPosition newCellPosition = new CellPosition();
-                    newCellPosition.rowIndex = cellPosition.rowIndex + 1;
-                    newCellPosition.columnIndex = cellPosition.columnIndex;
-                    image[ newCellPosition.rowIndex ][ newCellPosition.columnIndex ] = '.';
-                    fillQueue.Enqueue( newCellPosition );
-                }
-
+                CheckCell( cellPosition.rowIndex + 1, cellPosition.columnIndex, ref image, ref fillQueue );
                 // 8
-                if ( cellPosition.rowIndex + 1 < image.Length && cellPosition.columnIndex + 1 < image[ cellPosition.rowIndex + 1 ].Length && image[ cellPosition.rowIndex + 1 ][ cellPosition.columnIndex + 1 ] == ' ' )
-                {
-                    CellPosition newCellPosition = new CellPosition();
-                    newCellPosition.rowIndex = cellPosition.rowIndex + 1;
-                    newCellPosition.columnIndex = cellPosition.columnIndex + 1;
-                    image[ newCellPosition.rowIndex ][ newCellPosition.columnIndex ] = '.';
-                    fillQueue.Enqueue( newCellPosition );
-                }
+                CheckCell( cellPosition.rowIndex + 1, cellPosition.columnIndex + 1, ref image, ref fillQueue );
             }
         }
 
         private static void FillImage( ref char[][] image )
         {
-            CellPosition lastStartCellPosition = new CellPosition();
-            lastStartCellPosition.rowIndex = -1;
-            lastStartCellPosition.columnIndex = -1;
-            CellPosition startCellPosition = FindStartCell( ref image, lastStartCellPosition );
+            Queue<CellPosition> startCellPositions = FindStartCells( ref image );
 
-            while ( startCellPosition.rowIndex != -1 && startCellPosition.columnIndex != -1 )
+            while ( startCellPositions.Count > 0 )
             {
+                CellPosition startCellPosition = startCellPositions.Dequeue();
                 FillAroundCell( ref image, startCellPosition );
-                lastStartCellPosition = startCellPosition;
-                startCellPosition = FindStartCell( ref image, lastStartCellPosition );
             }
         }
 
-        private static void PrintImage( char[][] image, string outputFilePath )
+        private static void PrintImageToFile( char[][] image, string outputFilePath )
         {
             using ( StreamWriter outputStream = new StreamWriter( outputFilePath ) )
             {
@@ -262,27 +205,6 @@ namespace Fill
                     outputStream.WriteLine();
                 }
             }
-        }
-
-        static int Main( string[] args )
-        {
-            Args? parsedArgs = ParseArgs( args );
-
-            if ( parsedArgs == null )
-            {
-                return 1;
-            }
-
-            string inputFilePath = parsedArgs.Value.inputFilePath;
-            string outputFilePath = parsedArgs.Value.outputFilePath;
-
-            char[][] image = GetImageFromFile( inputFilePath );
-
-            FillImage( ref image );
-
-            PrintImage( image, outputFilePath );
-
-            return 0;
         }
     }
 }

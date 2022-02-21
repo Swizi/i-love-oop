@@ -41,25 +41,26 @@ namespace Radix
             wasError = false;
 
             const int startAlphabetChar = 'A';
+            string uppercaseStr = str.ToUpper();
             bool isNegative = false;
             int currNum = 0;
 
-            for ( int i = 0; i < str.Length; i++ )
+            for ( int i = 0; i < uppercaseStr.Length; i++ )
             {
-                int chNum = str[ i ];
+                int chNum = uppercaseStr[ i ];
                 int currDigitNum = 0;
 
-                if ( i == 0 && ( str[ i ] == '-' ) )
+                if ( i == 0 && ( uppercaseStr[ i ] == '-' ) )
                 {
                     isNegative = true;
                 }
 
-                if ( i == 0 && ( str[ i ] == '+' ) || ( str[ i ] == '-' ) )
+                if ( i == 0 && ( uppercaseStr[ i ] == '+' ) || ( uppercaseStr[ i ] == '-' ) )
                 {
                     continue;
                 }
 
-                if ( !char.IsDigit( str[ i ] ) )
+                if ( !char.IsDigit( uppercaseStr[ i ] ) )
                 {
                     currDigitNum = MAX_INT_DIGIT + 1 + chNum - startAlphabetChar;
                 }
@@ -74,11 +75,7 @@ namespace Radix
                     return -1;
                 }
 
-                try
-                {
-                    int test = checked(( currNum * radix ) + currDigitNum);
-                }
-                catch ( OverflowException )
+                if ( currNum >= ( int.MaxValue - currDigitNum ) / radix )
                 {
                     wasError = true;
                     return -1;
@@ -108,9 +105,8 @@ namespace Radix
 
             do
             {
-                int chNum = 0;
+                int chNum = unsignedNum % radix;
                 char ch = '0';
-                chNum = unsignedNum % radix;
 
                 if ( chNum <= MAX_INT_DIGIT )
                 {
