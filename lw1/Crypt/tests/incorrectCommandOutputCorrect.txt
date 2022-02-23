@@ -1,0 +1,1 @@
+Incorrect <command> param. <command> should be: crypt or decrypt
