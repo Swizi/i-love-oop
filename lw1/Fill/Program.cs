@@ -40,7 +40,7 @@ namespace Fill
 
             char[][] image = GetImageFromFile( inputFilePath );
 
-            FillImage( ref image );
+            FillImage( image );
 
             PrintImageToFile( image, outputFilePath );
 
@@ -72,7 +72,7 @@ namespace Fill
             return args;
         }
 
-        private static void InitializeRow( ref List<char[]> image, int rowLength )
+        private static void InitializeRow( List<char[]> image, int rowLength )
         {
             char[] row = new char[ rowLength ];
             for ( int columnIndex = 0; columnIndex < rowLength; columnIndex++ )
@@ -104,7 +104,7 @@ namespace Fill
                         rowLength = MAX_IMAGE_WIDTH;
                     }
 
-                    InitializeRow( ref image, rowLength );
+                    InitializeRow( image, rowLength );
 
                     for ( int columnIndex = 0; columnIndex < rowLength; columnIndex++ )
                     {
@@ -116,7 +116,7 @@ namespace Fill
             return image.ToArray();
         }
 
-        private static Queue<CellPosition> FindStartCells( ref char[][] image )
+        private static Queue<CellPosition> FindStartCells( char[][] image )
         {
             Queue<CellPosition> startCellPositions = new Queue<CellPosition>();
 
@@ -137,7 +137,7 @@ namespace Fill
             return startCellPositions;
         }
 
-        private static void CheckCell( int rowIndex, int columnIndex, ref char[][] image, ref Queue<CellPosition> fillQueue )
+        private static void CheckCell( int rowIndex, int columnIndex, char[][] image, Queue<CellPosition> fillQueue )
         {
             if ( rowIndex >= 0 && rowIndex < image.Length && columnIndex >= 0 && columnIndex < image[ rowIndex ].Length && image[ rowIndex ][ columnIndex ] == ' ' )
             {
@@ -149,7 +149,7 @@ namespace Fill
             }
         }
 
-        private static void FillAroundCell( ref char[][] image, CellPosition startCellPosition )
+        private static void FillAroundCell( char[][] image, CellPosition startCellPosition )
         {
             Queue<CellPosition> fillQueue = new Queue<CellPosition>();
             fillQueue.Enqueue( startCellPosition );
@@ -163,32 +163,32 @@ namespace Fill
                 // 6 7              8
 
                 // 1
-                CheckCell( cellPosition.rowIndex - 1, cellPosition.columnIndex - 1, ref image, ref fillQueue );
+                CheckCell( cellPosition.rowIndex - 1, cellPosition.columnIndex - 1, image, fillQueue );
                 // 2
-                CheckCell( cellPosition.rowIndex - 1, cellPosition.columnIndex, ref image, ref fillQueue );
+                CheckCell( cellPosition.rowIndex - 1, cellPosition.columnIndex, image, fillQueue );
                 // 3
-                CheckCell( cellPosition.rowIndex - 1, cellPosition.columnIndex + 1, ref image, ref fillQueue );
+                CheckCell( cellPosition.rowIndex - 1, cellPosition.columnIndex + 1, image, fillQueue );
                 // 4
-                CheckCell( cellPosition.rowIndex, cellPosition.columnIndex - 1, ref image, ref fillQueue );
+                CheckCell( cellPosition.rowIndex, cellPosition.columnIndex - 1, image, fillQueue );
                 // 5
-                CheckCell( cellPosition.rowIndex, cellPosition.columnIndex + 1, ref image, ref fillQueue );
+                CheckCell( cellPosition.rowIndex, cellPosition.columnIndex + 1, image, fillQueue );
                 // 6
-                CheckCell( cellPosition.rowIndex + 1, cellPosition.columnIndex - 1, ref image, ref fillQueue );
+                CheckCell( cellPosition.rowIndex + 1, cellPosition.columnIndex - 1, image, fillQueue );
                 // 7
-                CheckCell( cellPosition.rowIndex + 1, cellPosition.columnIndex, ref image, ref fillQueue );
+                CheckCell( cellPosition.rowIndex + 1, cellPosition.columnIndex, image, fillQueue );
                 // 8
-                CheckCell( cellPosition.rowIndex + 1, cellPosition.columnIndex + 1, ref image, ref fillQueue );
+                CheckCell( cellPosition.rowIndex + 1, cellPosition.columnIndex + 1, image, fillQueue );
             }
         }
 
-        private static void FillImage( ref char[][] image )
+        private static void FillImage( char[][] image )
         {
-            Queue<CellPosition> startCellPositions = FindStartCells( ref image );
+            Queue<CellPosition> startCellPositions = FindStartCells( image );
 
             while ( startCellPositions.Count > 0 )
             {
                 CellPosition startCellPosition = startCellPositions.Dequeue();
-                FillAroundCell( ref image, startCellPosition );
+                FillAroundCell( image, startCellPosition );
             }
         }
 

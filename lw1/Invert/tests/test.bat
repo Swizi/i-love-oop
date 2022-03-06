@@ -28,7 +28,8 @@ echo Test 4 passed
 fc %OUT% %~dp0\\incorrectArgumentsCountOutput.txt || goto err
 echo Test 5 passed
 
-:: Cant calculate inversed matrix
+:: Determinant is zero
+:: change name files
 %PROGRAM% %~dp0\\cantCalculateInversedMatrixInput.txt > %OUT% && goto err
 fc %OUT% %~dp0\\cantCalculateInversedMatrixOutput.txt || goto err
 echo Test 6 passed

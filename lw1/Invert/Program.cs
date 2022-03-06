@@ -22,6 +22,7 @@ namespace Invert
                 return null;
             }
 
+            // Переделать на List?
             args.matrix = new double[][] { new double[] { -1, -1, -1 }, new double[] { -1, -1, -1 }, new double[] { -1, -1, -1 } };
 
             string matrixFilePath = stringArgs[ 0 ];
@@ -52,30 +53,29 @@ namespace Invert
                         return null;
                     }
 
-                    for ( int j = 0; j < 3; j++ )
+                    for ( int columnIndex = 0; columnIndex < 3; columnIndex++ )
                     {
-                        bool correct = double.TryParse( lineValues[ j ], out args.matrix[ linesCount - 1 ][ j ] );
+                        bool correct = double.TryParse( lineValues[ columnIndex ], out args.matrix[ linesCount - 1 ][ columnIndex ] );
                         if ( !correct )
                         {
-                            Console.WriteLine( "Incorrect matrix value at x=" + ( linesCount - 1 ) + " y=" + j + ". Matrix value should be number" );
+                            Console.WriteLine( "Incorrect matrix value at x=" + ( linesCount - 1 ) + " y=" + columnIndex + ". Matrix value should be number" );
                             return null;
                         }
                     }
                 }
-                inputStream.ReadLine();
             }
 
             return args;
         }
 
-        private static double GetMatrixDetermination( double[][] matrix, double size )
+        private static double GetMatrixDetermination( double[][] matrix, double dimension )
         {
             double det = 0;
-            if ( size == 2 )
+            if ( dimension == 2 )
             {
                 det = matrix[ 0 ][ 0 ] * matrix[ 1 ][ 1 ] - matrix[ 0 ][ 1 ] * matrix[ 1 ][ 0 ];
             }
-            if ( size == 3 )
+            if ( dimension == 3 )
             {
                 double[][] firstMatrix = new double[][] { new double[] { matrix[ 1 ][ 1 ], matrix[ 1 ][ 2 ] }, new double[] { matrix[ 2 ][ 1 ], matrix[ 2 ][ 2 ] } };
                 double[][] secondMatrix = new double[][] { new double[] { matrix[ 1 ][ 0 ], matrix[ 1 ][ 2 ] }, new double[] { matrix[ 2 ][ 0 ], matrix[ 2 ][ 2 ] } };
@@ -89,6 +89,8 @@ namespace Invert
 
         private static double[][] GetMatrix3x3Minor( double[][] matrix )
         {
+            // Добавить в параметры dimension
+            // Добавить функцию, которая получает nMatrix
             double[][] firstMatrix = new double[][] { new double[] { matrix[ 1 ][ 1 ], matrix[ 1 ][ 2 ] }, new double[] { matrix[ 2 ][ 1 ], matrix[ 2 ][ 2 ] } };
             double[][] secondMatrix = new double[][] { new double[] { matrix[ 1 ][ 0 ], matrix[ 1 ][ 2 ] }, new double[] { matrix[ 2 ][ 0 ], matrix[ 2 ][ 2 ] } };
             double[][] thirdMatrix = new double[][] { new double[] { matrix[ 1 ][ 0 ], matrix[ 1 ][ 1 ] }, new double[] { matrix[ 2 ][ 0 ], matrix[ 2 ][ 1 ] } };
@@ -109,7 +111,10 @@ namespace Invert
             double eightsMatrixDet = GetMatrixDetermination( eightsMatrix, 2 );
             double ninthMatrixDet = GetMatrixDetermination( ninthMatrix, 2 );
 
-            return new double[][] { new double[] { firstMatrixDet, secondMatrixDet, thirdMatrixDet }, new double[] { fourthMatrixDet, fifthMatrixDet, sixthMatrixDet }, new double[] { seventhMatrixDet, eightsMatrixDet, ninthMatrixDet } };
+            return new double[][] { new double[] { firstMatrixDet, secondMatrixDet, thirdMatrixDet },
+                new double[] { fourthMatrixDet, fifthMatrixDet, sixthMatrixDet },
+                new double[] { seventhMatrixDet, eightsMatrixDet, ninthMatrixDet } 
+            };
         }
 
         private static double[][] GetMatrix3x3Cofactor( double[][] matrix )
@@ -125,24 +130,25 @@ namespace Invert
         {
             double[][] transposedMatrix = { new double[] { -1, -1, -1 }, new double[] { -1, -1, -1 }, new double[] { -1, -1, -1 } };
 
-            for ( int i = 0; i < 3; i++ )
+            for ( int rowIndex = 0; rowIndex < 3; rowIndex++ )
             {
-                for ( int j = 0; j < 3; j++ )
+                for ( int columnIndex = 0; columnIndex < 3; columnIndex++ )
                 {
-                    transposedMatrix[ j ][ i ] = matrix[ i ][ j ];
+                    transposedMatrix[ columnIndex ][ rowIndex ] = matrix[ rowIndex ][ columnIndex ];
+                    // Это тоже transposedMatrix[ columnIndex ][ rowIndex ] = matrix[ rowIndex ][ columnIndex ];
                 }
             }
 
             return transposedMatrix;
         }
 
-        private static double[][] GetMultipliedMatrix( double[][] matrix, double multiplier )
+        private static double[][] MultiplyMatrix( double[][] matrix, double multiplier )
         {
-            for ( int i = 0; i < 3; i++ )
+            for ( int rowIndex = 0; rowIndex < 3; rowIndex++ )
             {
-                for ( int j = 0; j < 3; j++ )
+                for ( int columnIndex = 0; columnIndex < 3; columnIndex++ )
                 {
-                    matrix[ i ][ j ] *= multiplier;
+                    matrix[ rowIndex ][ columnIndex ] *= multiplier;
                 }
             }
 
@@ -159,17 +165,18 @@ namespace Invert
             }
             double[][] transposedMatrix = GetTransposedMatrix( GetMatrix3x3Cofactor( GetMatrix3x3Minor( matrix ) ) );
 
-            return GetMultipliedMatrix( transposedMatrix, 1 / det );
+            return MultiplyMatrix( transposedMatrix, 1 / det );
         }
 
         private static void PrintMatrix( double[][] matrix )
         {
-            for ( int i = 0; i < 3; i++ )
+            // Передавать по константной ссылке
+            for ( int rowIndex = 0; rowIndex < 3; rowIndex++ )
             {
-                for ( int j = 0; j < 3; j++ )
+                for ( int columnIndex = 0; columnIndex < 3; columnIndex++ )
                 {
-                    Console.Write( "{0:F3}", matrix[ i ][ j ] );
-                    if ( j < 2 )
+                    Console.Write( "{0:F3}", matrix[ rowIndex ][ columnIndex ] );
+                    if ( columnIndex < 2 )
                     {
                         Console.Write( " " );
                     }
