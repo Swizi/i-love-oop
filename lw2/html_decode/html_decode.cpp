@@ -13,7 +13,7 @@ void move_window(string& window)
 	}
 }
 
-bool is_window_string_possible(string const& window, string const& str)
+bool is_window_string_possible(string const window, string const str)
 {
 	bool is_possible = false;
 
@@ -27,7 +27,7 @@ bool is_window_string_possible(string const& window, string const& str)
 	return is_possible;
 }
 
-string replace(string& source_string, string const& find_string, string const& replace_string)
+string replace(string source_string, string const find_string, string const replace_string)
 {
 	string out_string = "";
 	string window = "";
@@ -71,7 +71,7 @@ string replace(string& source_string, string const& find_string, string const& r
 	return out_string;
 }
 
-string html_decode(string const& html)
+string html_decode(string const html)
 {
 	map<string, string> decoders = {
 		{"&quot;", "\""},

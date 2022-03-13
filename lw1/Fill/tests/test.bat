@@ -18,27 +18,30 @@ echo Test 2 passed
 fc %~dp0\\startCellEndOutput.txt %~dp0\\startCellEndOutputCorrect.txt || goto err
 echo Test 3 passed
 
-::Check cell conditions
+:: Check cell conditions
+%PROGRAM% %~dp0\\checkConditionInput.txt %~dp0\\checkConditionOutput.txt || goto err
+fc %~dp0\\checkConditionOutput.txt %~dp0\\checkConditionOutputCorrect.txt || goto err
+echo Test 4 passed
 
 :: Empty file
 %PROGRAM% %~dp0\\emptyInput.txt %~dp0\\emptyOutput.txt || goto err
 fc %~dp0\\emptyOutput.txt %~dp0\\emptyOutputCorrect.txt || goto err
-echo Test 4 passed
+echo Test 5 passed
 
 :: 150x150 image
 %PROGRAM% %~dp0\\150x150Input.txt %~dp0\\150x150Output.txt || goto err
 fc %~dp0\\150x150Output.txt %~dp0\\150x150OutputCorrect.txt || goto err
-echo Test 5 passed
+echo Test 6 passed
 
 :: Start cell at the start
 %PROGRAM% %~dp0\\startCellStartInput.txt %~dp0\\startCellStartOutput.txt || goto err
 fc %~dp0\\startCellStartOutput.txt %~dp0\\startCellStartOutputCorrect.txt || goto err
-echo Test 6 passed
+echo Test 7 passed
 
 :: Standard
 %PROGRAM% %~dp0\\standardInput.txt %~dp0\\standardOutput.txt || goto err
 fc %~dp0\\standardOutput.txt %~dp0\\standardOutputCorrect.txt || goto err
-echo Test 7 passed
+echo Test 8 passed
 
 echo All tests passed
 exit /B 0

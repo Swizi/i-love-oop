@@ -46,6 +46,8 @@ namespace Crypt
                 return parsedArgs;
             }
 
+            // Проверить доступ outputFile, inputFile
+
             try
             {
                 byte test = Convert.ToByte( args[ 3 ] );
@@ -65,26 +67,26 @@ namespace Crypt
             return parsedArgs;
         }
 
-        private static byte ConvertToByte( BitArray bits )
+        private static byte ConvertBitArrayToByte( BitArray bits )
         {
             byte[] bytes = new byte[ 1 ];
             bits.CopyTo( bytes, 0 );
             return bytes[ 0 ];
         }
 
-        private static byte XORByte( byte inputByte, byte key )
+        private static BitArray XORBitArray( byte inputByte, byte key )
         {
+            // передавать массив битов
             BitArray XORBitArray = new BitArray( new byte[] { inputByte } );
             BitArray keyBitArray = new BitArray( new byte[] { key } );
             XORBitArray.Xor( keyBitArray );
 
-            return ConvertToByte( XORBitArray );
+            return XORBitArray;
         }
 
-        private static byte MixByte( byte inputByte, string command )
+        private static BitArray MixBitArray( BitArray inputBitArray, string command )
         {
-            BitArray inputBitArray = new BitArray( new byte[] { inputByte } );
-            BitArray bitArrayCopy = new BitArray( new byte[] { inputByte } );
+            BitArray bitArrayCopy = new BitArray( inputBitArray );
 
             if ( command == COMMAND_CRYPT )
             {
@@ -110,23 +112,26 @@ namespace Crypt
                 inputBitArray[ 7 ] = bitArrayCopy[ 5 ];
             }
 
-            return ConvertToByte( inputBitArray );
+            return inputBitArray;
         }
 
-        private static void CryptFromFileToFile( string inputFilePath, string outputFilePath, byte key )
+        private static void CryptFileToFile( string inputFilePath, string outputFilePath, byte key )
         {
             using ( FileStream inputStream = new FileStream( inputFilePath, FileMode.Open ) )
             {
+                //  Нужен ли is_open?
                 using ( FileStream outputStream = new FileStream( outputFilePath, FileMode.Create ) )
                 {
                     int intByte = inputStream.ReadByte();
+                    // убрать int?
                     while ( intByte != -1 )
                     {
                         byte readByte = Convert.ToByte( intByte );
-                        byte xoredByte = XORByte( readByte, key );
-                        byte mixedByte = MixByte( xoredByte, COMMAND_CRYPT );
-
-                        outputStream.WriteByte( mixedByte );
+                        // создать cryptByte()
+                        BitArray xoredBitArray = XORBitArray( readByte, key );
+                        BitArray mixedBitArray = MixBitArray( xoredBitArray, COMMAND_CRYPT );
+                        byte outByte = ConvertBitArrayToByte( mixedBitArray );
+                        outputStream.WriteByte( outByte );
 
                         intByte = inputStream.ReadByte();
                     }
@@ -134,7 +139,7 @@ namespace Crypt
             }
         }
 
-        private static void DecryptFromFileToFile( string inputFilePath, string outputFilePath, byte key )
+        private static void DecryptFileToFile( string inputFilePath, string outputFilePath, byte key )
         {
             using ( FileStream inputStream = new FileStream( inputFilePath, FileMode.Open ) )
             {
@@ -144,10 +149,10 @@ namespace Crypt
                     while ( intByte != -1 )
                     {
                         byte readByte = Convert.ToByte( intByte );
-                        byte mixedByte = MixByte( readByte, COMMAND_DECRYPT );
-                        byte xoredByte = XORByte( mixedByte, key );
-
-                        outputStream.WriteByte( xoredByte );
+                        BitArray xoredBitArray = XORBitArray( readByte, key );
+                        BitArray mixedBitArray = MixBitArray( xoredBitArray, COMMAND_DECRYPT );
+                        byte outByte = ConvertBitArrayToByte( mixedBitArray );
+                        outputStream.WriteByte( outByte );
 
                         intByte = inputStream.ReadByte();
                     }
@@ -170,12 +175,12 @@ namespace Crypt
 
             if ( command == COMMAND_CRYPT )
             {
-                CryptFromFileToFile( inputFilePath, outputFilePath, key );
+                CryptFileToFile( inputFilePath, outputFilePath, key );
             }
 
             if ( command == COMMAND_DECRYPT )
             {
-                DecryptFromFileToFile( inputFilePath, outputFilePath, key );
+                DecryptFileToFile( inputFilePath, outputFilePath, key );
             }
 
             return 0;
