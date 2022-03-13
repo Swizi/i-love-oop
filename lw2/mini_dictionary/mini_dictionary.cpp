@@ -19,7 +19,7 @@ public:
 	string dict_path;
 };
 
-vector<string> split(const string& s, char delim)
+vector<string> split(const string s, const char delim)
 {
 	vector<string> elems;
 	istringstream iss(s);
@@ -31,7 +31,7 @@ vector<string> split(const string& s, char delim)
 	return elems;
 }
 
-string lowercase_string(string input_string)
+string get_lowercased_string(const string input_string)
 {
 	string lowercased_string = input_string;
 	transform(input_string.begin(), input_string.end(), lowercased_string.begin(),
@@ -53,7 +53,7 @@ Args parse_args(int argc, char* argv[])
 	return args;
 }
 
-bool is_russian_letter(char letter)
+bool is_russian_letter(const char letter)
 {
 	bool is_russian = false;
 	int i = 0;
@@ -110,7 +110,7 @@ void print_translations(map<string, vector<string>>& dict, map<string, vector<st
 		if (translation_word != "")
 		{
 			has_changed = true;
-			translation_word = lowercase_string(translation_word);
+			translation_word = get_lowercased_string(translation_word);
 			vector<string> translations = { translation_word };
 			pair<string, vector<string>> translation = { word, translations };
 			dict.insert(translation);
@@ -131,7 +131,7 @@ void print_translations(map<string, vector<string>>& dict, map<string, vector<st
 	}
 }
 
-map<string, vector<string>> get_dict(ifstream& dict_file_stream, string separator)
+map<string, vector<string>> get_dict(ifstream& dict_file_stream, const string separator)
 {
 	string line = "";
 	map<string, vector<string>> dict = {};
@@ -153,7 +153,7 @@ map<string, vector<string>> get_dict(ifstream& dict_file_stream, string separato
 	return dict;
 }
 
-void print_dict(string dict_file_name, map<string, vector<string>>& eng_to_rus_dict, map<string, vector<string>>&  rus_to_eng_dict)
+void print_dict(string dict_file_name, map<string, vector<string>>& eng_to_rus_dict, map<string, vector<string>>& rus_to_eng_dict)
 {
 	if (dict_file_name == "") {
 		cout << "Введите имя файла для словаря" << endl;
@@ -203,13 +203,13 @@ void print_dict(string dict_file_name, map<string, vector<string>>& eng_to_rus_d
 	cout << "Изменения сохранены. ";
 }
 
-void save_dicts(map<string, vector<string>>& eng_to_rus_dict, map<string, vector<string>>& rus_to_eng_dict, string dict_path)
+void save_dicts(map<string, vector<string>>& eng_to_rus_dict, map<string, vector<string>>& rus_to_eng_dict, const string dict_path)
 {
 	string agreement = "";
 	cout << "В словарь были внесены изменения. Введите Y или y для сохранения перед выходом" << endl;
 	getline(cin, agreement);
 
-	if (lowercase_string(agreement) == "y")
+	if (get_lowercased_string(agreement) == "y")
 	{
 		print_dict(dict_path, eng_to_rus_dict, rus_to_eng_dict);
 	}
@@ -228,7 +228,7 @@ int main(int argc, char* argv[])
 	if (args.dict_path != "")
 	{
 		ifstream dict_file_stream(args.dict_path);
-		
+
 		eng_to_rus_dict = get_dict(dict_file_stream, DICT_SEPARATOR);
 
 		rus_to_eng_dict = get_dict(dict_file_stream, "");
@@ -237,7 +237,7 @@ int main(int argc, char* argv[])
 
 	while (getline(cin, line) && line != END_COMMAND)
 	{
-		string word = lowercase_string(line);
+		string word = get_lowercased_string(line);
 		if (is_word_russian(word)) {
 			print_translations(rus_to_eng_dict, eng_to_rus_dict, word, cout, has_dict_changed);
 		}
