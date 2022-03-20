@@ -41,7 +41,7 @@ namespace Crypt
 
             if ( !File.Exists( args[ 1 ] ) )
             {
-                Console.WriteLine( "Input file is not exists" );
+                Console.WriteLine( "Input file is not exists or can not be opened" );
                 parsedArgs.isValid = false;
                 return parsedArgs;
             }
@@ -74,14 +74,21 @@ namespace Crypt
             return bytes[ 0 ];
         }
 
-        private static BitArray XORBitArray( byte inputByte, byte key )
+        private static BitArray XORBitArray( BitArray bitArray, byte key )
         {
-            // передавать массив битов
-            BitArray XORBitArray = new BitArray( new byte[] { inputByte } );
             BitArray keyBitArray = new BitArray( new byte[] { key } );
-            XORBitArray.Xor( keyBitArray );
+            bitArray.Xor( keyBitArray );
 
-            return XORBitArray;
+            return bitArray;
+        }
+
+        private static byte EncryptByte( byte inputByte, byte key, string command )
+        {
+            BitArray inputBitArray = new BitArray( new byte[] { inputByte } );
+            BitArray xoredBitArray = XORBitArray( inputBitArray, key );
+            BitArray mixedBitArray = MixBitArray( xoredBitArray, command );
+
+            return ConvertBitArrayToByte( mixedBitArray );
         }
 
         private static BitArray MixBitArray( BitArray inputBitArray, string command )
@@ -115,11 +122,11 @@ namespace Crypt
             return inputBitArray;
         }
 
-        private static void CryptFileToFile( string inputFilePath, string outputFilePath, byte key )
+        private static void EncryptFileToFile( string inputFilePath, string outputFilePath, byte key, string command )
         {
             using ( FileStream inputStream = new FileStream( inputFilePath, FileMode.Open ) )
             {
-                //  Нужен ли is_open?
+                // Нужен ли is_open?
                 using ( FileStream outputStream = new FileStream( outputFilePath, FileMode.Create ) )
                 {
                     int intByte = inputStream.ReadByte();
@@ -127,31 +134,7 @@ namespace Crypt
                     while ( intByte != -1 )
                     {
                         byte readByte = Convert.ToByte( intByte );
-                        // создать cryptByte()
-                        BitArray xoredBitArray = XORBitArray( readByte, key );
-                        BitArray mixedBitArray = MixBitArray( xoredBitArray, COMMAND_CRYPT );
-                        byte outByte = ConvertBitArrayToByte( mixedBitArray );
-                        outputStream.WriteByte( outByte );
-
-                        intByte = inputStream.ReadByte();
-                    }
-                }
-            }
-        }
-
-        private static void DecryptFileToFile( string inputFilePath, string outputFilePath, byte key )
-        {
-            using ( FileStream inputStream = new FileStream( inputFilePath, FileMode.Open ) )
-            {
-                using ( FileStream outputStream = new FileStream( outputFilePath, FileMode.Create ) )
-                {
-                    int intByte = inputStream.ReadByte();
-                    while ( intByte != -1 )
-                    {
-                        byte readByte = Convert.ToByte( intByte );
-                        BitArray xoredBitArray = XORBitArray( readByte, key );
-                        BitArray mixedBitArray = MixBitArray( xoredBitArray, COMMAND_DECRYPT );
-                        byte outByte = ConvertBitArrayToByte( mixedBitArray );
+                        byte outByte = EncryptByte( readByte, key, command );
                         outputStream.WriteByte( outByte );
 
                         intByte = inputStream.ReadByte();
@@ -173,15 +156,7 @@ namespace Crypt
             string outputFilePath = parsedArgs.outputFilePath;
             byte key = parsedArgs.key;
 
-            if ( command == COMMAND_CRYPT )
-            {
-                CryptFileToFile( inputFilePath, outputFilePath, key );
-            }
-
-            if ( command == COMMAND_DECRYPT )
-            {
-                DecryptFileToFile( inputFilePath, outputFilePath, key );
-            }
+            EncryptFileToFile( inputFilePath, outputFilePath, key, command );
 
             return 0;
         }

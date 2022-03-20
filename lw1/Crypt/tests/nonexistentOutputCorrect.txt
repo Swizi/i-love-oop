@@ -1,1 +1,1 @@
-Input file is not exists
+Input file is not exists or can not be opened
