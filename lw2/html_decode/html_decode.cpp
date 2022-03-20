@@ -2,6 +2,7 @@
 #include <string>
 #include <map>
 #include <fstream>
+#include <html_decode.h>
 
 using namespace std;
 
