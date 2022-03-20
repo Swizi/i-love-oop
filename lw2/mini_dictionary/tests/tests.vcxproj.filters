@@ -15,21 +15,21 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="mini_dictionary.cpp">
+    <ClCompile Include="tests.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="string_functions.cpp">
+    <ClCompile Include="..\dict.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="dict.cpp">
+    <ClCompile Include="..\string_functions.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="string_functions.h">
+    <ClInclude Include="..\dict.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="dict.h">
+    <ClInclude Include="..\string_functions.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
