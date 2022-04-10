@@ -1,7 +1,7 @@
 #include "string_functions.h";
 #include <iostream>
 
-void move_window(std::string &window)
+void MoveWindow(std::string &window)
 {
 	for (int i = 1; i < window.size(); i++)
 	{
@@ -9,26 +9,26 @@ void move_window(std::string &window)
 	}
 }
 
-bool is_window_string_possible(std::string const window, std::string const str)
+bool IsWindowStringPossible(std::string const window, std::string const str)
 {
-	bool is_possible = false;
+	bool isPossible = false;
 
 	int i = 0;
-	while (i < str.size() && !is_possible)
+	while (i < str.size() && !isPossible)
 	{
-		is_possible = window.substr(window.size() - 1 - i, i + 1) == str.substr(0, i + 1) ? true : is_possible;
+		isPossible = window.substr(window.size() - 1 - i, i + 1) == str.substr(0, i + 1) ? true : isPossible;
 		i++;
 	}
 
-	return is_possible;
+	return isPossible;
 }
 
-std::string replace_str(std::string source_string, std::string const find_string, std::string const replace_string)
+std::string ReplaceStr(const std::string sourceString, std::string const findString, std::string const replaceString)
 {
-	std::string out_string = "";
+	std::string outString = "";
 	std::string window = "";
 
-	for (int i = 0; i < find_string.size(); i++)
+	for (int i = 0; i < findString.size(); i++)
 	{
 		window += ' ';
 	}
@@ -37,32 +37,32 @@ std::string replace_str(std::string source_string, std::string const find_string
 
 	if (window.size() != 0)
 	{
-		for (std::string::iterator source_it = source_string.begin(); source_it != source_string.end(); ++source_it)
+		for (auto sourceIt = sourceString.cbegin(); sourceIt != sourceString.end(); ++sourceIt)
 		{
-			move_window(window);
-			window[window.size() - 1] = *source_it;
+			MoveWindow(window);
+			window[window.size() - 1] = *sourceIt;
 
-			bool is_find_string_possible = is_window_string_possible(window, find_string);
+			bool isFindStringPossible = IsWindowStringPossible(window, findString);
 
-			reserve += *source_it;
+			reserve += *sourceIt;
 
-			if (window == find_string)
+			if (window == findString)
 			{
-				out_string += replace_string;
+				outString += replaceString;
 				reserve = "";
 			}
 
-			if (!is_find_string_possible)
+			if (!isFindStringPossible)
 			{
-				out_string += reserve;
+				outString += reserve;
 				reserve = "";
 			}
 		}
 	}
 	else
 	{
-		out_string = source_string;
+		outString = sourceString;
 	}
 
-	return out_string;
+	return outString;
 }

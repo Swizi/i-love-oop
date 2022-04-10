@@ -1,95 +1,85 @@
-﻿#include "dict.h";
+﻿#include "dict.h"
 
 // Dictionary
 
-std::map<std::string, std::vector<std::string>> get_dict(std::ifstream& dict_file_stream)
+std::map<std::string, std::vector<std::string>> GetDict(std::istream& dictFileStream)
 {
-	std::string line = "";
+	std::string line;
 	std::map<std::string, std::vector<std::string>> dict = {};
 
-	while (getline(dict_file_stream, line))
+	while (getline(dictFileStream, line))
 	{
 		std::vector<std::string> translation = split(line, ' ');
-		append_translation(dict, translation);
+		AppendTranslation(dict, translation);
 	}
 
 	return dict;
 }
 
-void print_dict(std::string dict_file_name, std::map<std::string, std::vector<std::string>>& dict)
+void PrintDict(const std::string& dictFileName, const std::map<std::string, std::vector<std::string>>& dict)
 {
-	if (dict_file_name != "")
-	{
-		std::ofstream dict_file(dict_file_name);
+		std::ofstream dictFile(dictFileName);
 
 		for (const auto& [word, translations] : dict)
 		{
-			dict_file << word;
-			dict_file << " ";
+			dictFile << word;
+			dictFile << " ";
 			for (int translationIndex = 0; translationIndex < translations.size(); translationIndex++)
 			{
-				dict_file << translations[translationIndex];
+				dictFile << translations[translationIndex];
 				if (translationIndex != translations.size() - 1)
 				{
-					dict_file << " ";
+					dictFile << " ";
 				}
 			}
 
-			dict_file << std::endl;
+			dictFile << std::endl;
 		}
 
-		dict_file.close();
-	}
+		dictFile.close();
 
 	std::cout << "Изменения сохранены. ";
 }
 
-void save_dict(std::map<std::string, std::vector<std::string>>& dict, std::string dict_path, std::istream& in)
+void SaveDict(const std::map<std::string, std::vector<std::string>>& dict, std::string& dictPath, std::istream& in)
 {
-	if (dict_path == "")
-	{
-		std::cout << "Введите имя файла для словаря" << std::endl;
-		std::getline(in, dict_path);
-	}
-
-	print_dict(dict_path, dict);
+	PrintDict(dictPath, dict);
 }
 
 // Translation
 
-bool has_translation(std::map<std::string, std::vector<std::string>>& dict, const std::string word)
+bool HasTranslation(std::map<std::string, std::vector<std::string>>& dict, const std::string word)
 {
-	std::map<std::string, std::vector<std::string>>::iterator it;
-	it = dict.find(word);
+	auto it = dict.find(word);
 
 	return it != dict.end();
 }
 
-void append_translation(std::map<std::string, std::vector<std::string>>& dict, std::vector<std::string> translation)
+void AppendTranslation(std::map<std::string, std::vector<std::string>> & dict, const std::vector<std::string>& translation)
 {
 	std::string word = translation[0];
-	std::string translation_word = translation[1];
+	std::string translationWord = translation[1];
 
-	if (!has_translation(dict, word))
+	if (!HasTranslation(dict, word))
 	{
-		dict.insert({ word, {translation_word} });
+		dict.insert({ word, {translationWord} });
 	}
 	else
 	{
-		dict[word].push_back(translation_word);
+		dict[word].push_back(translationWord);
 	}
 
-	if (!has_translation(dict, translation_word))
+	if (!HasTranslation(dict, translationWord))
 	{
-		dict.insert({ translation_word, {word} });
+		dict.insert({ translationWord, {word} });
 	}
 	else
 	{
-		dict[translation_word].push_back(word);
+		dict[translationWord].push_back(word);
 	}
 }
 
-void print_translation(std::vector<std::string> translation, std::ostream& out)
+void PrintTranslation(const std::vector<std::string>& translation, std::ostream& out)
 {
 	for (int i = 0; i < translation.size(); i++)
 	{

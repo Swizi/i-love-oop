@@ -1,4 +1,4 @@
-#include "string_functions.h";
+#include "string_functions.h"
 
 std::vector<std::string> split(const std::string s, const char delim)
 {
@@ -12,15 +12,15 @@ std::vector<std::string> split(const std::string s, const char delim)
 	return elems;
 }
 
-std::string get_lowercased_string(const std::string input_string)
+std::string GetLowercasedString(const std::string inputString)
 {
-	std::string lowercased_string = input_string;
-	std::transform(input_string.begin(), input_string.end(), lowercased_string.begin(),
+	std::string lowercasedString = inputString;
+	std::transform(inputString.begin(), inputString.end(), lowercasedString.begin(),
 		[](unsigned char ch)
 		{
 			return tolower(ch);
 		}
 	);
 
-	return lowercased_string;
+	return lowercasedString;
 }

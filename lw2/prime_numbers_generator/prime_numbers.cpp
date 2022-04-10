@@ -1,27 +1,42 @@
 #include "prime_numbers.h"
+#include <iostream>
 
 std::set<int> GeneratePrimeNumbersSet(int upperBound)
 {
-	std::vector<int> numbers = {};
-	std::set<int> primeNumbers = {};
-
-	for (int num = 0; num < upperBound; num++)
+	if (upperBound < 2)
 	{
-		numbers.push_back(num);
+		return {};
 	}
 
-	for (int i = 2; i < upperBound; i++)
+	std::vector<bool> primeIndexes(upperBound + 1, true);
+
+	primeIndexes[0] = false;
+	primeIndexes[1] = false;
+	for (int j = 4; j <= upperBound && j < INT_MAX; j += 2)
 	{
-		if (numbers[i] != 0)
+		primeIndexes[j] = false;
+	}
+
+	for (int i = 3; i * i <= upperBound; i += 2)
+	{
+		if (primeIndexes[i] == true)
 		{
-			primeNumbers.insert(numbers[i]);
 			if (i < INT_MAX / i)
 			{
-				for (int j = i * i; j < upperBound && j < INT_MAX; j += i)
+				for (int j = i * i; j <= upperBound && j < INT_MAX; j += i)
 				{
-					numbers[j] = 0;
+					primeIndexes[j] = false;
 				}
 			}
+		}
+	}
+
+	std::set<int> primeNumbers = {};
+	for (int i = 0; i < primeIndexes.size(); i++)
+	{
+		if (primeIndexes[i] == true)
+		{
+			primeNumbers.insert(i);
 		}
 	}
 

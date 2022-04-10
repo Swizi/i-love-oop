@@ -4,5 +4,5 @@
 #include <iostream>
 #include <map>
 
-std::string html_decode(std::string const html);
-void decode(std::istream& input_stream, std::ostream& decoded_lines);
+std::string HtmlDecode(std::string const html);
+void Decode(std::istream& inputStream, std::ostream& decodedLines);

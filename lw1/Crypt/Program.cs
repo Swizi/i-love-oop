@@ -129,15 +129,15 @@ namespace Crypt
                 // Нужен ли is_open?
                 using ( FileStream outputStream = new FileStream( outputFilePath, FileMode.Create ) )
                 {
-                    int intByte = inputStream.ReadByte();
+                    int inputByte = inputStream.ReadByte();
                     // убрать int?
-                    while ( intByte != -1 )
+                    while ( inputByte != -1 )
                     {
-                        byte readByte = Convert.ToByte( intByte );
+                        byte readByte = Convert.ToByte( inputByte );
                         byte outByte = EncryptByte( readByte, key, command );
                         outputStream.WriteByte( outByte );
 
-                        intByte = inputStream.ReadByte();
+                        inputByte = inputStream.ReadByte();
                     }
                 }
             }

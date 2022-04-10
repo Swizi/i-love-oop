@@ -2,6 +2,13 @@
 #include "../../../Catch2/catch.hpp"
 #include "../prime_numbers.h"
 
+TEST_CASE("Negative upper bound")
+{
+	std::set<int> primeNums = GeneratePrimeNumbersSet(-100);
+
+	REQUIRE(primeNums.size() == 0);
+}
+
 TEST_CASE("Zero upper bound")
 {
 	std::set<int> primeNums = GeneratePrimeNumbersSet(0);
@@ -9,16 +16,18 @@ TEST_CASE("Zero upper bound")
 	REQUIRE(primeNums.size() == 0);
 }
 
+TEST_CASE("Standard upper bound")
+{
+	std::set<int> primeNums = GeneratePrimeNumbersSet(5);
+
+	REQUIRE(primeNums.size() == 3);
+}
+
+#if NDEBUG
 TEST_CASE("Top limit upper bound")
 {
 	std::set<int> primeNums = GeneratePrimeNumbersSet(100000000);
 
 	REQUIRE(primeNums.size() == 5761455);
 }
-
-TEST_CASE("Standard upper bound")
-{
-	std::set<int> primeNums = GeneratePrimeNumbersSet(5);
-
-	REQUIRE(primeNums.size() == 2);
-}
+#endif

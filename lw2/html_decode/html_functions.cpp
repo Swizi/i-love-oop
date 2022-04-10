@@ -1,7 +1,7 @@
 #include "html_functions.h";
 #include "string_functions.h";
 
-std::string html_decode(std::string const html)
+std::string HtmlDecode(std::string const html)
 {
 	std::map<std::string, std::string> decoders = {
 		{"&quot;", "\""},
@@ -10,22 +10,22 @@ std::string html_decode(std::string const html)
 		{"&gt;", ">"},
 		{"&amp;", "&"}
 	};
-	std::string decoded_string = html;
+	std::string decodedString = html;
 
-	for (const auto& [find_string, replace_string] : decoders)
+	for (const auto& [findString, replaceString] : decoders)
 	{
-		decoded_string = replace_str(decoded_string, find_string, replace_string);
+		decodedString = ReplaceStr(html, findString, replaceString);
 	}
 
-	return decoded_string;
+	return decodedString;
 }
 
-void decode(std::istream& input_stream, std::ostream& decoded_lines)
+void Decode(std::istream& inputStream, std::ostream& decodedLines)
 {
-	std::string input_line = "";
+	std::string inputLine = "";
 
-	while (getline(input_stream, input_line))
+	while (getline(inputStream, inputLine))
 	{
-		decoded_lines << html_decode(input_line) << "\n";
+		decodedLines << HtmlDecode(inputLine) << "\n";
 	}
 }

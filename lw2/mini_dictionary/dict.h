@@ -8,11 +8,11 @@
 const std::string END_COMMAND = "...";
 
 // Dictionary
-std::map<std::string, std::vector<std::string>> get_dict(std::ifstream& dict_file_stream);
-void print_dict(std::string dict_file_name, std::map<std::string, std::vector<std::string>>& dict);
-void save_dict(std::map<std::string, std::vector<std::string>>& dict, std::string dict_path, std::istream& in);
+std::map<std::string, std::vector<std::string>> GetDict(std::ifstream& dictFileStream);
+void PrintDict(std::string dictFileName, std::map<std::string, std::vector<std::string>>& dict);
+void SaveDict(std::map<std::string, std::vector<std::string>>& dict, std::string dictPath, std::istream& in);
 
 // Translation
-bool has_translation(std::map<std::string, std::vector<std::string>>& dict, const std::string word);
-void append_translation(std::map<std::string, std::vector<std::string>>& dict, std::vector<std::string> translation);
-void print_translation(std::vector<std::string> translation, std::ostream& out);
+bool HasTranslation(std::map<std::string, std::vector<std::string>>& dict, const std::string word);
+void AppendTranslation(std::map<std::string, std::vector<std::string>>& dict, std::vector<std::string> translation);
+void PrintTranslation(std::vector<std::string> translation, std::ostream& out);

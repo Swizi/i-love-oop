@@ -1,8 +1,6 @@
 #include <iostream>
 #include <string>
-#include "prime_numbers.h";
-
-using namespace std;
+#include "prime_numbers.h"
 
 class Args
 {
@@ -18,15 +16,16 @@ Args ParseArgs(int argc, char* argv[])
 	args.wasError = argc != 2;
 	if (args.wasError)
 	{
-		cout << "Incorrect arguments count. Arguments should be: <upperBound>" << endl;
+		std::cout << "Incorrect arguments count. Arguments should be: <upperBound>" << std::endl;
+		return args;
 	}
 	try
 	{
-		args.upperBound = argc == 2 ? stoi(argv[1]) : -1;
+		args.upperBound = argc == 2 ? std::stoi(argv[1]) : -1;
 	}
-	catch (std::exception e)
+	catch (const std::exception& e)
 	{
-		cout << e.what() << endl;
+		std::cout << e.what() << std::endl;
 		args.wasError = true;
 	}
 
@@ -44,7 +43,7 @@ int main(int argc, char* argv[])
 	std::set<int> primeNumbers = GeneratePrimeNumbersSet(parsedArgs.upperBound);
 	for (auto primeNumber : primeNumbers)
 	{
-		cout << primeNumber << endl;
+		std::cout << primeNumber << std::endl;
 	}
 
 	return 0;

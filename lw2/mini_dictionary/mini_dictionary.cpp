@@ -1,21 +1,21 @@
-﻿#include <Windows.h>;
-#include "dict.h";
+﻿#include <Windows.h>
+#include "dict.h"
 
 using namespace std;
 
 class Args
 {
 public:
-	string dict_path;
-	boolean was_error;
+	string dictPath;
+	boolean wasError;
 };
 
 Args parse_args(int argc, char* argv[])
 {
 	Args args = Args();
 
-	args.was_error = argc > 1;
-	args.dict_path = argc == 2 ? argv[1] : "";
+	args.wasError = argc > 1;
+	args.dictPath = argc == 2 ? argv[1] : "";
 
 	return args;
 }
@@ -26,7 +26,7 @@ int main(int argc, char* argv[])
 	SetConsoleOutputCP(1251);
 
 	Args args = parse_args(argc, argv);
-	if (args.was_error)
+	if (args.wasError)
 	{
 		cout << "Неверное количество аргументов" << endl;
 		return 1;
@@ -35,36 +35,36 @@ int main(int argc, char* argv[])
 	string line = "";
 
 	map<string, vector<string>> dict = {};
-	if (args.dict_path != "")
+	if (args.dictPath != "")
 	{
-		ifstream dict_file_stream(args.dict_path);
+		ifstream dictFileStream(args.dictPath);
 
-		dict = get_dict(dict_file_stream);
+		dict = GetDict(dictFileStream);
 	}
 
-	bool has_dict_changed = false;
+	bool hasDictChanged = false;
 	while (getline(cin, line) && line != END_COMMAND)
 	{
-		string word = get_lowercased_string(line);
-		if (has_translation(dict, word))
+		string word = GetLowercasedString(line);
+		if (HasTranslation(dict, word))
 		{
 			vector<string> translation = dict[word];
-			print_translation(translation, cout);
+			PrintTranslation(translation, cout);
 		}
 		else
 		{
 			cout << "Неизвестное слово \"" << word << "\". Введите перевод или пустую строку для отказа." << endl;
-			string translation_word = "";
-			getline(cin, translation_word);
-			translation_word = get_lowercased_string(translation_word);
+			string translationWord = "";
+			getline(cin, translationWord);
+			translationWord = GetLowercasedString(translationWord);
 
-			if (translation_word != "")
+			if (translationWord != "")
 			{
-				vector<string> translation = { word, translation_word };
-				has_dict_changed = true;
-				append_translation(dict, translation);
+				vector<string> translation = { word, translationWord };
+				hasDictChanged = true;
+				AppendTranslation(dict, translation);
 
-				cout << "Слово \"" << word << "\" сохранено в словаре как \"" << translation_word << "\"." << endl;
+				cout << "Слово \"" << word << "\" сохранено в словаре как \"" << translationWord << "\"." << endl;
 			}
 			else
 			{
@@ -73,15 +73,20 @@ int main(int argc, char* argv[])
 		}
 	}
 
-	if (has_dict_changed)
+	if (hasDictChanged)
 	{
 		string agreement = "";
 		cout << "В словарь были внесены изменения. Введите Y или y для сохранения перед выходом" << std::endl;
 		getline(cin, agreement);
 
-		if (get_lowercased_string(agreement) == "y")
+		if (GetLowercasedString(agreement) == "y")
 		{
-			save_dict(dict, args.dict_path, cin);
+			if (dictPath == "")
+			{
+				std::cout << "Введите имя файла для словаря" << std::endl;
+				std::getline(in, dictPath);
+			}
+			SaveDict(dict, args.dictPath, cin);
 		}
 	}
 
