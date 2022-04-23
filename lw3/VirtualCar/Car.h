@@ -22,13 +22,13 @@ public:
 	CCar();
 	~CCar();
 
-	bool isTurnedOn() const;
+	bool IsTurnedOn() const;
 	Direction GetDirection() const;
 	short int GetSpeed() const;
 	short int GetGear() const;
 
 	bool TurnOnEngine();
-	bool TurnOffEngine();
+	bool TurnOffEngine(std::string& errorMsg);
 	bool SetGear(const short int gear, std::string& errorMsg);
 	bool SetSpeed(const short int speed, std::string& errorMsg);
 

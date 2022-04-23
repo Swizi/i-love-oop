@@ -1,6 +1,6 @@
 #include "string_functions.h"
 
-std::vector<std::string> split(const std::string s, const char delim)
+std::vector<std::string> Split(const std::string s, const char delim)
 {
 	std::vector<std::string> elems;
 	std::istringstream iss(s);

@@ -1,115 +1,303 @@
 #define CATCH_CONFIG_MAIN
 #include "../../../Catch2/catch.hpp"
-#include "../CCar.h"
+#include "../Car.h"
 
-TEST_CASE("Min boundary speed")
+// Машина выключена, но хотим скорость засеттить
+// WHEN GIVEN THEN
+// end-to-end tests, unit tests разделить
+
+SCENARIO("Initial information about the car")
 {
-	CCar car = CCar();
-	std::string errorMsg = "";
+	GIVEN("A car")
+	{
+		CCar car = CCar();
+		std::string errorMsg = "";
 
-	car.TurnOnEngine();
-	car.SetGear(-1, errorMsg);
-	car.SetSpeed(0, errorMsg);
+		WHEN("Engine is off")
+		{
+			car.TurnOffEngine(errorMsg);
 
-	REQUIRE(errorMsg == "");
+			THEN("gear, speed and direction should have initial values")
+			{
+				REQUIRE(car.GetGear() == 0);
+				REQUIRE(car.GetSpeed() == 0);
+				REQUIRE(car.GetDirection == Direction::None);
+			}
+		}
+
+		WHEN("Engine is on")
+		{
+			car.TurnOnEngine();
+
+			THEN("gear, speed and direction should have initial values")
+			{
+				REQUIRE(car.GetGear() == 0);
+				REQUIRE(car.GetSpeed() == 0);
+				REQUIRE(car.GetDirection == Direction::None);
+			}
+		}
+	}
 }
 
-TEST_CASE("Max boundary speed")
+SCENARIO("Car can change gear")
 {
-	CCar car = CCar();
-	std::string errorMsg = "";
+	GIVEN("Turned on car")
+	{
+		CCar car = CCar();
+		car.TurnOnEngine();
 
-	car.TurnOnEngine();
-	car.SetGear(1, errorMsg);
-	car.SetSpeed(30, errorMsg);
-	car.SetGear(2, errorMsg);
-	car.SetSpeed(50, errorMsg);
-	car.SetGear(3, errorMsg);
-	car.SetSpeed(60, errorMsg);
-	car.SetGear(4, errorMsg);
-	car.SetSpeed(90, errorMsg);
-	car.SetGear(5, errorMsg);
-	car.SetSpeed(150, errorMsg);
+		WHEN("Gear is reverse")
+		{
+			std::string errorMsg = "";
+			car.SetGear(-1, errorMsg);
 
-	REQUIRE(errorMsg == "");
-}
+			WHEN("Speed is 0")
+			{
+				THEN("Car can change gear to reverse, neutral, first")
+				{
+					std::vector<std::string> errorMsgs = { "", "", "" };
 
-TEST_CASE("Invalid speed")
-{
-	CCar car = CCar();
-	std::string errorMsg = "";
+					car.SetGear(-1, errorMsgs[0]);
+					car.SetGear(0, errorMsgs[1]);
+					car.SetGear(1, errorMsgs[2]);
 
-	car.TurnOnEngine();
-	car.SetSpeed(151, errorMsg);
+					INFO("Car can not change gear to reverse");
+					REQUIRE(errorMsgs[0] == "");
+					INFO("Car can not change gear to neutral");
+					REQUIRE(errorMsgs[1] == "");
+					INFO("Car can not change gear to first");
+					REQUIRE(errorMsgs[2] == "");
+				}
 
-	REQUIRE(errorMsg == "Speed should be in 0 .. 150");
-}
+				THEN("Car can not change gear to second, third, fourth, fifth")
+				{
+					std::vector<std::string> errorMsgs = { "", "", "", "" };
 
-TEST_CASE("Driving to job")
-{
-	CCar car = CCar();
-	std::string errorMsg = "";
+					car.SetGear(2, errorMsgs[0]);
+					car.SetGear(3, errorMsgs[1]);
+					car.SetGear(4, errorMsgs[2]);
+					car.SetGear(5, errorMsgs[3]);
 
-	car.TurnOnEngine();
-	car.SetGear(1, errorMsg);
-	car.SetSpeed(20, errorMsg);
-	car.SetGear(2, errorMsg);
-	car.SetSpeed(50, errorMsg);
-	car.SetGear(3, errorMsg);
-	car.SetSpeed(60, errorMsg);
-	car.SetGear(0, errorMsg);
-	car.SetSpeed(0, errorMsg);
-	car.TurnOffEngine();
+					INFO("Car can change gear to second");
+					REQUIRE(errorMsgs[0] != "");
+					INFO("Car can change gear to third");
+					REQUIRE(errorMsgs[1] != "");
+					INFO("Car can change gear to fourth");
+					REQUIRE(errorMsgs[2] != "");
+					INFO("Car can change gear to fifth");
+					REQUIRE(errorMsgs[3] != "");
+				}
+			}
 
-	REQUIRE(errorMsg == "");
-}
+			WHEN("Speed is not 0")
+			{
+				std::string errorMsg = "";
+				car.SetSpeed(5, errorMsg);
 
-TEST_CASE("Parking")
-{
-	CCar car = CCar();
-	std::string errorMsg = "";
+				THEN("Car can change gear to reverse, neutral")
+				{
+					std::vector<std::string> errorMsgs = { "", "" };
 
-	car.TurnOnEngine();
-	car.SetGear(-1, errorMsg);
-	car.SetSpeed(-5, errorMsg);
-	car.SetGear(0, errorMsg);
-	car.SetSpeed(5, errorMsg);
-	car.SetSpeed(-5, errorMsg);
-	car.TurnOffEngine();
+					car.SetGear(-1, errorMsgs[0]);
+					car.SetGear(0, errorMsgs[1]);
 
-	REQUIRE(errorMsg == "");
-}
+					INFO("Car can not change gear to reverse");
+					REQUIRE(errorMsgs[0] == "");
+					INFO("Car can not change gear to neutral");
+					REQUIRE(errorMsgs[1] == "");
+				}
 
-TEST_CASE("Racing")
-{
-	CCar car = CCar();
-	std::string errorMsg = "";
+				THEN("Car can not change gear to first, second, third, fourth, fifth")
+				{
+					std::vector<std::string> errorMsgs = { "", "", "", "", "" };
 
-	car.TurnOnEngine();
-	car.SetGear(1, errorMsg);
-	car.SetSpeed(30, errorMsg);
-	car.SetGear(2, errorMsg);
-	car.SetSpeed(50, errorMsg);
-	car.SetGear(3, errorMsg);
-	car.SetSpeed(60, errorMsg);
-	car.SetGear(4, errorMsg);
-	car.SetSpeed(90, errorMsg);
-	car.SetGear(5, errorMsg);
-	car.SetSpeed(150, errorMsg);
-	car.SetSpeed(60, errorMsg);
-	car.SetSpeed(100, errorMsg);
-	car.SetSpeed(120, errorMsg);
-	car.SetSpeed(50, errorMsg);
-	car.SetGear(4, errorMsg);
-	car.SetSpeed(40, errorMsg);
-	car.SetGear(3, errorMsg);
-	car.SetSpeed(30, errorMsg);
-	car.SetGear(2, errorMsg);
-	car.SetSpeed(20, errorMsg);
-	car.SetGear(1, errorMsg);
-	car.SetSpeed(0, errorMsg);
-	car.SetGear(0, errorMsg);
-	car.TurnOffEngine();
+					car.SetGear(1, errorMsgs[0]);
+					car.SetGear(2, errorMsgs[1]);
+					car.SetGear(3, errorMsgs[2]);
+					car.SetGear(4, errorMsgs[3]);
+					car.SetGear(5, errorMsgs[4]);
 
-	REQUIRE(errorMsg == "");
+					INFO("Car can change gear to first");
+					REQUIRE(errorMsgs[0] != "");
+					INFO("Car can change gear to second");
+					REQUIRE(errorMsgs[1] != "");
+					INFO("Car can change gear to third");
+					REQUIRE(errorMsgs[2] != "");
+					INFO("Car can change gear to fourth");
+					REQUIRE(errorMsgs[3] != "");
+					INFO("Car can change gear to fifth");
+					REQUIRE(errorMsgs[4] != "");
+				}
+			}
+		}
+
+		WHEN("Gear is neutral")
+		{
+			WHEN("Speed is 0")
+			{
+				THEN("Car can change gear to reverse, neutral, first")
+				{
+					std::vector<std::string> errorMsgs = { "", "", "" };
+
+					car.SetGear(-1, errorMsgs[0]);
+					car.SetGear(0, errorMsgs[1]);
+					car.SetGear(1, errorMsgs[2]);
+
+					INFO("Car can not change gear to reverse");
+					REQUIRE(errorMsgs[0] == "");
+					INFO("Car can not change gear to neutral");
+					REQUIRE(errorMsgs[1] == "");
+					INFO("Car can not change gear to first");
+					REQUIRE(errorMsgs[2] == "");
+				}
+
+				THEN("Car can not change gear to second, third, fourth, fifth")
+				{
+					std::vector<std::string> errorMsgs = { "", "", "", "" };
+
+					car.SetGear(2, errorMsgs[0]);
+					car.SetGear(3, errorMsgs[1]);
+					car.SetGear(4, errorMsgs[2]);
+					car.SetGear(5, errorMsgs[3]);
+
+					INFO("Car can change gear to second");
+					REQUIRE(errorMsgs[0] != "");
+					INFO("Car can change gear to third");
+					REQUIRE(errorMsgs[1] != "");
+					INFO("Car can change gear to fourth");
+					REQUIRE(errorMsgs[2] != "");
+					INFO("Car can change gear to fifth");
+					REQUIRE(errorMsgs[3] != "");
+				}
+			}
+
+			WHEN("Speed is not 0")
+			{
+				std::string errorMsg = "";
+				car.SetSpeed(5, errorMsg);
+
+				THEN("Car can change gear to neutral, first")
+				{
+					std::vector<std::string> errorMsgs = { "", "" };
+
+					car.SetGear(0, errorMsgs[0]);
+					car.SetGear(1, errorMsgs[1]);
+
+					INFO("Car can not change gear to neutral");
+					REQUIRE(errorMsgs[0] == "");
+					INFO("Car can not change gear to first");
+					REQUIRE(errorMsgs[1] == "");
+				}
+
+				THEN("Car can not change gear to reverse, second, third, fourth, fifth")
+				{
+					std::vector<std::string> errorMsgs = { "", "", "", "", "" };
+
+					car.SetGear(-1, errorMsgs[0]);
+					car.SetGear(2, errorMsgs[1]);
+					car.SetGear(3, errorMsgs[2]);
+					car.SetGear(4, errorMsgs[3]);
+					car.SetGear(5, errorMsgs[4]);
+
+					INFO("Car can change gear to reverse");
+					REQUIRE(errorMsgs[0] != "");
+					INFO("Car can change gear to second");
+					REQUIRE(errorMsgs[1] != "");
+					INFO("Car can change gear to third");
+					REQUIRE(errorMsgs[2] != "");
+					INFO("Car can change gear to fourth");
+					REQUIRE(errorMsgs[3] != "");
+					INFO("Car can change gear to fifth");
+					REQUIRE(errorMsgs[4] != "");
+				}
+			}
+		}
+
+		WHEN("Gear is first")
+		{
+			std::string errorMsg = "";
+			car.SetGear(1, errorMsg);
+
+			WHEN("Speed is 0")
+			{
+				THEN("Car can change gear to reverse, neutral, first")
+				{
+					std::vector<std::string> errorMsgs = { "", "", "" };
+
+					car.SetGear(-1, errorMsgs[0]);
+					car.SetGear(0, errorMsgs[1]);
+					car.SetGear(1, errorMsgs[2]);
+
+					INFO("Car can not change gear to reverse");
+					REQUIRE(errorMsgs[0] == "");
+					INFO("Car can not change gear to neutral");
+					REQUIRE(errorMsgs[1] == "");
+					INFO("Car can not change gear to first");
+					REQUIRE(errorMsgs[2] == "");
+				}
+
+				THEN("Car can not change gear to second, third, fourth, fifth")
+				{
+					std::vector<std::string> errorMsgs = { "", "", "", "" };
+
+					car.SetGear(2, errorMsgs[0]);
+					car.SetGear(3, errorMsgs[1]);
+					car.SetGear(4, errorMsgs[2]);
+					car.SetGear(5, errorMsgs[3]);
+
+					INFO("Car can change gear to second");
+					REQUIRE(errorMsgs[0] != "");
+					INFO("Car can change gear to third");
+					REQUIRE(errorMsgs[1] != "");
+					INFO("Car can change gear to fourth");
+					REQUIRE(errorMsgs[2] != "");
+					INFO("Car can change gear to fifth");
+					REQUIRE(errorMsgs[3] != "");
+				}
+			}
+
+			WHEN("Speed is not 0")
+			{
+				THEN("Car can change gear to neutral, first")
+				{
+					std::vector<std::string> errorMsgs = { "", "" };
+
+					car.SetGear(0, errorMsgs[0]);
+					car.SetGear(1, errorMsgs[1]);
+
+					INFO("Car can not change gear to neutral");
+					REQUIRE(errorMsgs[0] == "");
+					INFO("Car can not change gear to first");
+					REQUIRE(errorMsgs[1] == "");
+				}
+
+				THEN("Car can not change gear to reverse, second, third, fourth, fifth")
+				{
+					std::vector<std::string> errorMsgs = { "", "", "", "", "" };
+
+					car.SetGear(-1, errorMsgs[0]);
+					car.SetGear(2, errorMsgs[1]);
+					car.SetGear(3, errorMsgs[2]);
+					car.SetGear(4, errorMsgs[3]);
+					car.SetGear(5, errorMsgs[4]);
+
+					INFO("Car can change gear to reverse");
+					REQUIRE(errorMsgs[0] != "");
+					INFO("Car can change gear to second");
+					REQUIRE(errorMsgs[1] != "");
+					INFO("Car can change gear to third");
+					REQUIRE(errorMsgs[2] != "");
+					INFO("Car can change gear to fourth");
+					REQUIRE(errorMsgs[3] != "");
+					INFO("Car can change gear to fifth");
+					REQUIRE(errorMsgs[4] != "");
+				}
+			}
+		}
+
+		WHEN("Gear is second")
+		{
+
+		}
+	}
 }

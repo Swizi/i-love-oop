@@ -18,7 +18,7 @@
     <ClCompile Include="tests.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\CCar.cpp">
+    <ClCompile Include="..\Car.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="..\string_functions.cpp">
@@ -26,7 +26,7 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\CCar.h">
+    <ClInclude Include="..\Car.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\string_functions.h">
