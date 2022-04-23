@@ -68,6 +68,10 @@ bool CCar::TurnOffEngine(std::string& errorMsg)
 
 bool CCar::SetGear(short int gear, std::string& errorMsg)
 {
+	if (m_gear == gear)
+	{
+		return true;
+	}
 	if (!m_isTurnedOn)
 	{
 		errorMsg = "Car is not turned on";
@@ -80,8 +84,8 @@ bool CCar::SetGear(short int gear, std::string& errorMsg)
 
 		return false;
 	}
-	if (!(!((gear == -1 || (m_gear == -1 && gear == 1) || (m_gear == 0 && gear > 0 && m_direction == Direction::Backward))
-			&& m_speed != 0))) {
+	if ((gear == -1 || (m_gear == -1 && gear == 1) || (m_gear == 0 && gear > 0 && m_direction == Direction::Backward)) && m_speed != 0)
+	{
 		errorMsg = "Speed should be equals to 0. Current speed is: ";
 		errorMsg.append(std::to_string(m_speed));
 
@@ -125,8 +129,8 @@ bool CCar::SetSpeed(const short int speed, std::string& errorMsg)
 
 		return false;
 	}
-	if (!(speed >= MIN_SPEED && speed <= MAX_SPEED)) 
-		{
+	if (!(speed >= MIN_SPEED && speed <= MAX_SPEED))
+	{
 		errorMsg = "Speed should be in ";
 		errorMsg.append(std::to_string(MIN_SPEED));
 		errorMsg.append(" .. ");
@@ -134,7 +138,7 @@ bool CCar::SetSpeed(const short int speed, std::string& errorMsg)
 
 		return false;
 	}
-    SpeedRange availableSpeedRange = m_availableGears[m_gear];
+	SpeedRange availableSpeedRange = m_availableGears[m_gear];
 	if (!(speed >= availableSpeedRange.minSpeed && speed <= availableSpeedRange.maxSpeed))
 	{
 		errorMsg = "Cannot switch to this speed. At ";
@@ -159,6 +163,20 @@ bool CCar::SetSpeed(const short int speed, std::string& errorMsg)
 	{
 		m_direction = Direction::None;
 	}
-	
+	else
+	{
+		if (m_direction == Direction::None)
+		{
+			if (m_gear == -1)
+			{
+				m_direction = Direction::Backward;
+			}
+			if (m_gear >= 1)
+			{
+				m_direction = Direction::Forward;
+			}
+		}
+	}
+
 	return true;
 }
