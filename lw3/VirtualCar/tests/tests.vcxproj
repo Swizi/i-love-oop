@@ -152,11 +152,13 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="..\Car.cpp" />
+    <ClCompile Include="..\Controller.cpp" />
     <ClCompile Include="..\string_functions.cpp" />
     <ClCompile Include="tests.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Car.h" />
+    <ClInclude Include="..\Controller.h" />
     <ClInclude Include="..\string_functions.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
