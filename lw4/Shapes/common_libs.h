@@ -1,0 +1,9 @@
+#pragma once
+#define _USE_MATH_DEFINES
+#include <cstdint>
+#include <string>
+#include <vector>
+#include <cmath>
+#include <istream>
+#include <functional>
+#include <map>
