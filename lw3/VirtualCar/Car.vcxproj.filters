@@ -15,7 +15,7 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Car.cpp">
+    <ClCompile Include="CCar.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="VirtualCar.cpp">
@@ -24,18 +24,18 @@
     <ClCompile Include="string_functions.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Controller.cpp">
+    <ClCompile Include="CController.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Car.h">
+    <ClInclude Include="CCar.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="string_functions.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Controller.h">
+    <ClInclude Include="CController.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

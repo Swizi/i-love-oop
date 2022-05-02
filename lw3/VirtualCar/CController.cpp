@@ -1,5 +1,5 @@
-#include "Car.h"
-#include "Controller.h"
+#include "CCar.h"
+#include "CController.h"
 
 CController::CController(CCar& car, std::istream& input, std::ostream& output)
 	: m_car(car)
@@ -12,7 +12,8 @@ CController::CController(CCar& car, std::istream& input, std::ostream& output)
 		  { "EngineOff", bind(&CController::TurnOff, this, std::placeholders::_1) },
 		  { "Info", bind(&CController::PrintInfo, this, std::placeholders::_1) },
 		  { "SetGear", bind(&CController::SetGear, this, std::placeholders::_1) },
-		  { "SetSpeed", bind(&CController::SetSpeed, this, std::placeholders::_1) }
+		  { "SetSpeed", bind(&CController::SetSpeed, this, std::placeholders::_1) },
+		  { "Help", bind(&CController::Help, this, std::placeholders::_1) }
 	  })
 {
 }
@@ -115,6 +116,18 @@ bool CController::PrintInfo(std::istream& /*args*/)
 	m_output << std::endl;
 	m_output << "Speed: " << m_car.GetSpeed() << std::endl;
 	m_output << "Gear: " << m_car.GetGear() << std::endl;
+
+	return true;
+}
+
+bool CController::Help(std::istream& /*args*/)
+{
+	m_output << "Available commands:" << std::endl;
+	m_output << "EngineOn" << std::endl;
+	m_output << "EngineOff" << std::endl;
+	m_output << "Info" << std::endl;
+	m_output << "SetGear <gear>" << std::endl;
+	m_output << "SetSpeed <speed>" << std::endl;
 
 	return true;
 }

@@ -19,6 +19,7 @@ private:
 	bool TurnOff(std::istream& args);
 	bool SetGear(std::istream& args);
 	bool SetSpeed(std::istream& args);
+	bool Help(std::istream& args);
 
 private:
 	// функция-обработчик команды пользователя.

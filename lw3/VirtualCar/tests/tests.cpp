@@ -1,7 +1,7 @@
 #define CATCH_CONFIG_MAIN
 #include "../../../Catch2/catch.hpp"
-#include "../Car.h"
-#include "../Controller.h";
+#include "../CCar.h"
+#include "../CController.h";
 
 SCENARIO("Initial information about the car")
 {
