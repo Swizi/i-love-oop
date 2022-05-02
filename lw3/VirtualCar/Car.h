@@ -1,6 +1,5 @@
 #pragma once
 #include "string_functions.h"
-#include "number_functions.h"
 #include <map>
 
 struct SpeedRange

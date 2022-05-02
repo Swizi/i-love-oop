@@ -6,11 +6,11 @@ CController::CController(CCar& car, std::istream& input, std::ostream& output)
 	, m_input(input)
 	, m_output(output)
 	, m_actionMap({
-		  { "TurnOn", [this](std::istream& strm) {
+		  { "EngineOn", [this](std::istream& strm) {
 			   return TurnOn(strm);
 		   } },
-		  { "TurnOff", bind(&CController::TurnOff, this, std::placeholders::_1) },
-		  { "PrintInfo", bind(&CController::PrintInfo, this, std::placeholders::_1) },
+		  { "EngineOff", bind(&CController::TurnOff, this, std::placeholders::_1) },
+		  { "Info", bind(&CController::PrintInfo, this, std::placeholders::_1) },
 		  { "SetGear", bind(&CController::SetGear, this, std::placeholders::_1) },
 		  { "SetSpeed", bind(&CController::SetSpeed, this, std::placeholders::_1) }
 	  })
@@ -50,7 +50,14 @@ bool CController::TurnOff(std::istream& /*args*/)
 
 	m_car.TurnOffEngine(errorMsg);
 
-	m_output << "Car engine is turned off" << std::endl;
+	if (!errorMsg.empty())
+	{
+		m_output << errorMsg << std::endl;
+	} 
+	else
+	{
+		m_output << "Car engine is turned off" << std::endl;
+	}
 
 	return true;
 }

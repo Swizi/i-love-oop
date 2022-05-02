@@ -56,10 +56,12 @@ bool CCar::TurnOffEngine(std::string& errorMsg)
 		}
 		else
 		{
-			errorMsg = "Gear should be: 0. Speed should be: 0. Current gear is: ";
+			errorMsg = "Gear should be 0. Speed should be 0. Current gear is ";
 			errorMsg.append(std::to_string(m_gear));
-			errorMsg.append(" . Current speed is: ");
+			errorMsg.append(". Current speed is ");
 			errorMsg.append(std::to_string(m_speed));
+
+			return false;
 		}
 	}
 
@@ -84,9 +86,10 @@ bool CCar::SetGear(short int gear, std::string& errorMsg)
 
 		return false;
 	}
+	// Сделать читабельнее
 	if ((gear == -1 || (m_gear == -1 && gear == 1) || (m_gear == 0 && gear > 0 && m_direction == Direction::Backward)) && m_speed != 0)
 	{
-		errorMsg = "Speed should be equals to 0. Current speed is: ";
+		errorMsg = "Speed should be equals to 0. Current speed is ";
 		errorMsg.append(std::to_string(m_speed));
 
 		return false;

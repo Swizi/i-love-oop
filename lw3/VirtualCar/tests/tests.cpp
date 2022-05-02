@@ -1661,9 +1661,9 @@ SCENARIO("Car can be controlled by controller")
 	{
 		CCar car = CCar();
 
-		WHEN("Command <PrintInfo>")
+		WHEN("Command <Info>")
 		{
-			std::istringstream iss("PrintInfo");
+			std::istringstream iss("Info");
 			std::ostringstream oss;
 			CController controller = CController(car, iss, oss);
 
@@ -1675,9 +1675,9 @@ SCENARIO("Car can be controlled by controller")
 			}
 		}
 
-		WHEN("Command <TurnOn>")
+		WHEN("Command <EngineOn>")
 		{
-			std::istringstream iss("TurnOn");
+			std::istringstream iss("EngineOn");
 			std::ostringstream oss;
 			CController controller = CController(car, iss, oss);
 
@@ -1689,9 +1689,9 @@ SCENARIO("Car can be controlled by controller")
 			}
 		}
 
-		WHEN("Command <TurnOff>")
+		WHEN("Command <EngineOff>")
 		{
-			std::istringstream iss("TurnOff");
+			std::istringstream iss("EngineOff");
 			std::ostringstream oss;
 			CController controller = CController(car, iss, oss);
 
