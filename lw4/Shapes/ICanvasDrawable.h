@@ -1,9 +1,9 @@
 #pragma once
-#include "ICanvas.h"
+#include "CCanvas.h"
 
 class ICanvasDrawable
 {
 public:
 	~ICanvasDrawable() {};
-	virtual void Draw(ICanvas& canvas) const {};
+	virtual void Draw(CCanvas& canvas) const = 0;
 };

@@ -2,15 +2,11 @@
 #include "common_libs.h"
 #include "IShape.h"
 
-class IClosedShape : virtual public IShape
+class IClosedShape: public IShape
 {
 public:
 	~IClosedShape() {};
-	virtual double GetArea() const {};
-	virtual double GetPerimeter() const {};
-	virtual std::string GetFillColor() const {};
-
-	std::string GetOutlineColor() const override {};
-	std::string GetSpecifiedShapeData() const override {};
-	void Draw(ICanvas& canvas) const override {};
+	virtual double GetArea() const = 0;
+	virtual double GetPerimeter() const = 0;
+	virtual uint32_t GetFillColor() const = 0;
 };

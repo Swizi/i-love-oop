@@ -1,7 +1,7 @@
 #include "CRectangle.h"
 #include "common_libs.h"
 
-CRectangle::CRectangle(const CPoint& leftTopPoint, const uint32_t width, const uint32_t height, const std::string& outlineColor, const std::string& fillColor)
+CRectangle::CRectangle(const CPoint& leftTopPoint, const uint32_t width, const uint32_t height, const uint32_t outlineColor, const uint32_t fillColor)
 	: m_leftTopPoint(leftTopPoint)
 	, m_width(width)
 	, m_height(height)
@@ -20,12 +20,12 @@ double CRectangle::GetPerimeter() const
 	return m_width + m_height;
 }
 
-std::string CRectangle::GetFillColor() const
+uint32_t CRectangle::GetFillColor() const
 {
 	return m_fillColor;
 }
 
-std::string CRectangle::GetOutlineColor() const
+uint32_t CRectangle::GetOutlineColor() const
 {
 	return m_outlineColor;
 }
@@ -34,12 +34,12 @@ std::string CRectangle::GetSpecifiedShapeData() const
 {
 	std::ostringstream oss;
 
-	oss << "some shit" << std::endl;
+	oss << "This is a rectangle" << std::endl;
 
 	return oss.str();
 }
 
-void CRectangle::Draw(ICanvas& canvas) const
+void CRectangle::Draw(CCanvas& canvas) const
 {
 	canvas.DrawRectangle(m_leftTopPoint, m_width, m_height, m_outlineColor, m_fillColor);
 }

@@ -1,14 +1,14 @@
 #include "CLine.h"
 #include "common_libs.h"
 
-CLine::CLine(const CPoint& from, const CPoint& to, const std::string& outlineColor)
+CLine::CLine(const CPoint& from, const CPoint& to, const uint32_t outlineColor)
 	: m_startPoint(from)
 	, m_endPoint(to)
 	, m_outlineColor(outlineColor)
 {
 }
 
-std::string CLine::GetOutlineColor() const
+uint32_t CLine::GetOutlineColor() const
 {
 	return CLine::m_outlineColor;
 }
@@ -17,12 +17,12 @@ std::string CLine::GetSpecifiedShapeData() const
 {
 	std::ostringstream oss;
 
-	oss << "some shit" << std::endl;
+	oss << "This is a line" << std::endl;
 
 	return oss.str();
 }
 
-void CLine::Draw(ICanvas& canvas) const
+void CLine::Draw(CCanvas& canvas) const
 {
 	canvas.DrawLine(m_startPoint, m_endPoint, m_outlineColor);
 }

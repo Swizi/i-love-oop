@@ -7,10 +7,26 @@ int main()
 
 	while (!std::cin.eof() && !std::cin.fail())
 	{
-		controller.GetShape();
+		try
+		{
+			controller.GetShape();
+		}
+		catch (std::exception& e)
+		{
+			std::cout << e.what() << std::endl;
+		}
 	}
 
-	controller.GetShapesInfo();
+	try
+	{
+		controller.DrawShapes();
+		controller.GetShapesInfo();
+	}
+	catch (std::exception& e)
+	{
+		std::cout << e.what() << std::endl;
+		return 1;
+	}
 
 	return 0;
 }

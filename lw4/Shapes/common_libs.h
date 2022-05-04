@@ -5,5 +5,8 @@
 #include <vector>
 #include <cmath>
 #include <istream>
+#include <sstream>
 #include <functional>
 #include <map>
+#include <algorithm>
+#include <memory>
