@@ -5,14 +5,14 @@
 class CLine: public IShape
 {
 public:
-	CLine(const CPoint& from, const CPoint& to, const uint32_t fillColor);
+	CLine(const CPoint& from, const CPoint& to, const uint32_t outlineColor = MIN_HEX_COLOR);
 	~CLine(){};
 	uint32_t GetOutlineColor() const override final;
 	std::string GetSpecifiedShapeData() const override final;
-	void Draw(CCanvas& canvas) const override final;
+	void Draw(ICanvas& canvas) const override final;
 
 private:
 	CPoint m_startPoint;
 	CPoint m_endPoint;
-	uint32_t m_outlineColor = 0;
+	uint32_t m_outlineColor;
 };

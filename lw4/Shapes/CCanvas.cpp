@@ -32,29 +32,15 @@ void CCanvas::DrawLine(const CPoint& from, const CPoint& to, const uint32_t outl
 	m_window.draw(line, 2, sf::Lines);
 }
 
-void CCanvas::DrawRectangle(const CPoint& leftTopPoint, const uint32_t width, const uint32_t height, const uint32_t outlineColor, const uint32_t fillColor)
-{
-	if (m_window.isOpen())
-	{
-		sf::RectangleShape rect;
-		rect.setOutlineColor(GetColor(outlineColor));
-		rect.setFillColor(GetColor(fillColor));
-		rect.setPosition(sf::Vector2f(leftTopPoint.x, leftTopPoint.y));
-		rect.setSize(sf::Vector2f(width, height));
-
-		m_window.draw(rect);
-	}
-}
-
 void CCanvas::DrawCircle(const CPoint& center, const uint32_t radius, const uint32_t outlineColor, const uint32_t fillColor)
 {
 	if (m_window.isOpen())
 	{
 		sf::CircleShape circle;
+		circle.setRadius(radius);
+		circle.setPosition(center.x - radius, center.y - radius);
 		circle.setOutlineColor(GetColor(outlineColor));
 		circle.setFillColor(GetColor(fillColor));
-		circle.setRadius(radius);
-		circle.setPosition(center.x, center.y);
 
 		m_window.draw(circle);
 	}
@@ -65,13 +51,14 @@ void CCanvas::DrawPolygon(const std::vector<CPoint>& points, const uint32_t outl
 	if (m_window.isOpen())
 	{
 		sf::ConvexShape polygon;
+
 		polygon.setPointCount(points.size());
-		polygon.setOutlineColor(GetColor(outlineColor));
-		polygon.setFillColor(GetColor(fillColor));
 		for (int i = 0; i < points.size(); i++)
 		{
 			polygon.setPoint(i, sf::Vector2f(points[i].x, points[i].y));
 		}
+		polygon.setOutlineColor(GetColor(outlineColor));
+		polygon.setFillColor(GetColor(fillColor));
 
 		m_window.draw(polygon);
 	}

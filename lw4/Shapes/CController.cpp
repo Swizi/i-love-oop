@@ -1,12 +1,9 @@
 #include "CController.h"
 #include "CLine.h"
 #include "CCircle.h"
-#include "CRectangle.h"
+#include "CTriangle.h"
 #include "IClosedShape.h"
-#include "CPolygon.h"
-
-const int NEW_LINE_SYMBOL = -1;
-const int MAX_HEX_COLOR = 0xffffff;
+#include "CRectangle.h"
 
 CController::CController(std::istream& input, std::ostream& output)
 	: m_input(input)
@@ -14,7 +11,7 @@ CController::CController(std::istream& input, std::ostream& output)
 	, m_actionMap({
 		  { "line", bind(&CController::HandleLine, this, std::placeholders::_1) },
 		  { "circle", bind(&CController::HandleCircle, this, std::placeholders::_1) },
-		  { "polygon", bind(&CController::HandlePolygon, this, std::placeholders::_1) },
+		  { "triangle", bind(&CController::HandleTriangle, this, std::placeholders::_1) },
 		  { "rectangle", bind(&CController::HandleRectangle, this, std::placeholders::_1) },
 		  { "help", bind(&CController::Help, this, std::placeholders::_1) }
 		})
@@ -22,7 +19,7 @@ CController::CController(std::istream& input, std::ostream& output)
 }
 
 // Public
-bool CController::GetShape()
+bool CController::HandleCommand()
 {
 	std::string commandLine;
 	getline(m_input, commandLine);
@@ -38,9 +35,9 @@ bool CController::GetShape()
 		{
 			return it->second(strm);
 		}
-		catch (std::exception& e)
+		catch (std::exception const& e)
 		{
-			throw e;
+			throw;
 		}
 	}
 
@@ -49,30 +46,30 @@ bool CController::GetShape()
 
 bool CController::GetShapesInfo()
 {
-	auto maxAreaShapeIt = std::max_element(m_closedShapes.begin(), m_closedShapes.end(),
+	auto maxAreaShapeIt = std::min_element(m_closedShapes.begin(), m_closedShapes.end(),
 		[&](const std::unique_ptr<IClosedShape>& firstShape, const std::unique_ptr<IClosedShape>& secondShape) {
-			return firstShape->GetArea() < secondShape->GetArea();
+			return firstShape->GetArea() > secondShape->GetArea();
 		});
 	auto minPerimeterShapeIt = std::min_element(m_closedShapes.begin(), m_closedShapes.end(),
 		[&](const std::unique_ptr<IClosedShape>& firstShape, const std::unique_ptr<IClosedShape>& secondShape) {
-			return firstShape->GetPerimeter() > secondShape->GetPerimeter();
+			return firstShape->GetPerimeter() < secondShape->GetPerimeter();
 		});
 
 	if (maxAreaShapeIt != m_closedShapes.end()) {
-		m_output << "Max area shape:" << std::endl;
-		m_output << "Area: " << (*maxAreaShapeIt)->GetArea() << std::endl;
-		m_output << "Perimeter: " << (*maxAreaShapeIt)->GetPerimeter() << std::endl;
-		m_output << "Outline color: " << (*maxAreaShapeIt)->GetOutlineColor() << std::endl;
-		m_output << "Fill color: " << (*maxAreaShapeIt)->GetFillColor() << std::endl;
-		m_output << "Specific data: " << (*maxAreaShapeIt)->GetSpecifiedShapeData() << std::endl;
+		m_output << "Max area shape:" << std::endl
+		<< "Area: " << (*maxAreaShapeIt)->GetArea() << std::endl
+	    << "Perimeter: " << (*maxAreaShapeIt)->GetPerimeter() << std::endl
+		<< "Outline color: " << std::hex << (*maxAreaShapeIt)->GetOutlineColor() << std::endl
+		<< "Fill color: " << (*maxAreaShapeIt)->GetFillColor() << std::endl
+		<< "Specific data: " << (*maxAreaShapeIt)->GetSpecifiedShapeData() << std::endl;
 	}
 	if (minPerimeterShapeIt != m_closedShapes.end()) {
-		m_output << "Min perimeter shape:" << std::endl;
-		m_output << "Area: " << (*minPerimeterShapeIt)->GetArea() << std::endl;
-		m_output << "Perimeter: " << (*minPerimeterShapeIt)->GetPerimeter() << std::endl;
-    	m_output << "Outline color: " << (*minPerimeterShapeIt)->GetOutlineColor() << std::endl;
-		m_output << "Fill color: " << (*minPerimeterShapeIt)->GetFillColor() << std::endl;
-		m_output << "Specific data: " << (*minPerimeterShapeIt)->GetSpecifiedShapeData() << std::endl;
+		m_output << "Min perimeter shape:" << std::endl
+		<< "Area: " << (*minPerimeterShapeIt)->GetArea() << std::endl
+		<< "Perimeter: " << (*minPerimeterShapeIt)->GetPerimeter() << std::endl
+    	<< "Outline color: " << (*minPerimeterShapeIt)->GetOutlineColor() << std::endl
+		<< "Fill color: " << (*minPerimeterShapeIt)->GetFillColor() << std::endl
+		<< "Specific data: " << (*minPerimeterShapeIt)->GetSpecifiedShapeData() << std::endl;
 	}
 
 	return true;
@@ -80,7 +77,7 @@ bool CController::GetShapesInfo()
 
 bool CController::DrawShapes()
 {
-	sf::RenderWindow window(sf::VideoMode(800, 600), "Shapes");
+	sf::RenderWindow window(sf::VideoMode(800, 900), "Shapes");
 	CCanvas canvas(window);
 
 	while (window.isOpen())
@@ -118,9 +115,9 @@ bool CController::HandleLine(std::istream& args)
 		CLine line = CLine(parsedArgs.fromPoint, parsedArgs.toPoint, parsedArgs.outlineColor);
 		m_shapes.push_back(std::make_unique<CLine>(line));
 	}
-	catch (std::exception& e)
+	catch (std::exception const& e)
 	{
-		throw e;
+		throw;
 	}
 
 	return true;
@@ -137,13 +134,13 @@ bool CController::HandleCircle(std::istream& args)
 	return true;
 }
 
-bool CController::HandlePolygon(std::istream& args)
+bool CController::HandleTriangle(std::istream& args)
 {
-	CController::PolygonArgs parsedArgs = ParsePolygonArgs(args);
+	CController::TriangleArgs parsedArgs = ParseTriangleArgs(args);
 
-	CPolygon polygon = CPolygon(parsedArgs.points, parsedArgs.outlineColor, parsedArgs.fillColor);
-	m_shapes.push_back(std::make_unique<CPolygon>(polygon));
-	m_closedShapes.push_back(std::make_unique<CPolygon>(polygon));
+	CTriangle triangle = CTriangle(parsedArgs.points, parsedArgs.outlineColor, parsedArgs.fillColor);
+	m_shapes.push_back(std::make_unique<CTriangle>(triangle));
+	m_closedShapes.push_back(std::make_unique<CTriangle>(triangle));
 
 	return true;
 }
@@ -161,137 +158,402 @@ bool CController::HandleRectangle(std::istream& args)
 
 bool CController::Help(std::istream& /*args*/)
 {
-	m_output << "Available commands:" << std::endl;
-	m_output << "line <from x> <from y> <to x> <to y> <outlineColor(hex)>" << std::endl;
-	m_output << "circle <center x> <center y> <radius> <outlineColor(hex)> <fillColor(hex)>" << std::endl;
-	m_output << "polygon <points separated by a space>(<point1 x> <point1 y> <point2 x> <point2 y>; <outlineColor(hex)> <fillColor(hex)>" << std::endl;
-	m_output << "rectangle <left top x> <left top y> <width> <height> <outlineColor(hex)> <fillColor(hex)>" << std::endl;
+	m_output << "Available commands:" << std::endl
+		<< "line <from x> <from y> <to x> <to y> <outlineColor(hex)>" << std::endl
+		<< "circle <center x> <center y> <radius> <outlineColor(hex)> <fillColor(hex)>" << std::endl
+		<< "rectangle <left top x> <left top y> <width> <height> <outlineColor(hex)> <fillColor(hex)>" << std::endl
+		<< "triangle <first x> <first y> <second x> <second y> <third x> <third y> <outlineColor(hex)> <fillColor(hex)>" << std::endl;
 
 	return true;
 }
 
 CController::LineArgs CController::ParseLineArgs(std::istream& args)
 {
+	std::string argsString;
+	std::getline(args, argsString);
+	const std::vector<std::string> splittedArgs = split(argsString, ' ');
+	if (splittedArgs.size() != 6)
+	{
+		m_output << "Incorrect args count" << std::endl;
+	}
+	const std::string fromXString = splittedArgs[1];
+	const std::string fromYString = splittedArgs[2];
+	const std::string toXString = splittedArgs[3];
+	const std::string toYString = splittedArgs[4];
+	const std::string outlineColorString = splittedArgs[5];
+
+	if (fromXString[0] == '-')
+	{
+		throw std::invalid_argument("<from x> is negative. Point's coordinate can not be negative");
+	}
 	uint32_t fromX = 0;
-	uint32_t fromY = 0;
-	if (args.peek() == NEW_LINE_SYMBOL)
+	try
 	{
-		throw std::exception("Args are invalid. <from x> has not passed");
+		fromX = static_cast<uint32_t>(std::stoul(fromXString));
 	}
-	args >> fromX;
-	if (fromX < 0)
+	catch (std::exception const& e)
 	{
-		throw std::exception("<from x> can not be negative");
-	}
-	if (args.peek() == NEW_LINE_SYMBOL)
-	{
-		throw std::exception("Args are invalid. <from y> has not passed");
-	}
-	args >> fromY;
-	if (fromY < 0)
-	{
-		throw std::exception("<from y> can not be negative");
-	}
-	CPoint from = CPoint(fromX, fromY);
-	uint32_t toX = 0;
-	uint32_t toY = 0;
-	if (args.peek() == NEW_LINE_SYMBOL)
-	{
-		throw std::exception("Args are invalid. <to x> has not passed");
-	}
-	args >> toX;
-	if (toX < 0)
-	{
-		throw std::exception("<to x> can not be negative");
-	}
-	if (args.peek() == NEW_LINE_SYMBOL)
-	{
-		throw std::exception("Args are invalid. <to y> has not passed");
-	}
-	args >> toY;
-	if (toY < 0)
-	{
-		throw std::exception("<to y> can not be negative");
-	}
-	CPoint to = CPoint(toX, toY);
-	uint32_t outlineColor = 0;
-	if (args.peek() == NEW_LINE_SYMBOL)
-	{
-		throw std::exception("Args are invalid. <outlineColor> has not passed");
-	}
-	args >> std::hex >> outlineColor;
-	if (outlineColor < 0 || outlineColor > MAX_HEX_COLOR)
-	{
-		throw std::exception("<outlineColor> can be in 0 .. ffffff");
+		throw std::invalid_argument("Can not convert <from x> to unsigned number");
 	}
 
-	return {from, to, outlineColor};
+	if (fromYString[0] == '-')
+	{
+		throw std::invalid_argument("<from y> is negative. Point's coordinate can not be negative");
+	}
+	uint32_t fromY = 0;
+	try
+	{
+		fromY = static_cast<uint32_t>(std::stoul(fromYString));
+	}
+	catch (std::exception const& e)
+	{
+		throw std::invalid_argument("Can not convert <from y> to unsigned number");
+	}
+
+	if (toXString[0] == '-')
+	{
+		throw std::invalid_argument("<to x> is negative. Point's coordinate can not be negative");
+	}
+	uint32_t toX = 0;
+	try
+	{
+		toX = static_cast<uint32_t>(std::stoul(toXString));
+	}
+	catch (std::exception const& e)
+	{
+		throw std::invalid_argument("Can not convert <to x> to unsigned number");
+	}
+
+	if (toYString[0] == '-')
+	{
+		throw std::invalid_argument("<to y> is negative. Point's coordinate can not be negative");
+	}
+	uint32_t toY = 0;
+	try
+	{
+		toY = static_cast<uint32_t>(std::stoul(toYString));
+	}
+	catch (std::exception const& e)
+	{
+		throw std::invalid_argument("Can not convert <to y> to unsigned number");
+	}
+
+	if (outlineColorString[0] == '-')
+	{
+		throw std::invalid_argument("<outline color> is negative. Outline color can not be negative");
+	}
+	uint32_t outlineColor = MIN_HEX_COLOR;
+	try
+	{
+		outlineColor = static_cast<uint32_t>(std::stoul("0x" + outlineColorString, nullptr, 16));
+	}
+	catch (std::exception const& e)
+	{
+		throw std::invalid_argument("Can not convert <outline color> to hex");
+	}
+	if (outlineColor < 0 || outlineColor > MAX_HEX_COLOR)
+	{
+		throw std::invalid_argument("<outline color> can be in 0 .. ffffff");
+	}
+
+	const CPoint fromPoint = CPoint(fromX, fromY);
+	const CPoint toPoint = CPoint(toX, toY);
+
+	return { fromPoint, toPoint, outlineColor};
 }
 
 CController::RectangleArgs CController::ParseRectangleArgs(std::istream& args)
 {
-	uint32_t leftTopX = 0;
-	uint32_t leftTopY = 0;
-	args >> leftTopX;
-	args >> leftTopY;
-	CPoint leftTop = CPoint(leftTopX, leftTopY);
-	uint32_t width = 0;
-	args >> width;
-	uint32_t height = 0;
-	args >> height;
-	uint32_t outlineColor = 0;
-	args >> std::hex >> outlineColor;
-	uint32_t fillColor = 0;
-	args >> std::hex >> fillColor;
+	std::string argsString;
+	std::getline(args, argsString);
+	const std::vector<std::string> splittedArgs = split(argsString, ' ');
+	if (splittedArgs.size() != 7)
+	{
+		m_output << "Incorrect args count" << std::endl;
+	}
+	const std::string leftTopXString = splittedArgs[1];
+	const std::string leftTopYString = splittedArgs[2];
+	const std::string widthString = splittedArgs[3];
+	const std::string heightString = splittedArgs[4];
+	const std::string outlineColorString = splittedArgs[5];
+	const std::string fillColorString = splittedArgs[6];
 
-	return { leftTop, width, height, outlineColor, fillColor };
+	if (leftTopXString[0] == '-')
+	{
+		throw std::invalid_argument("<left top x> is negative. Point's coordinate can not be negative");
+	}
+	uint32_t leftTopX = 0;
+	try
+	{
+		leftTopX = static_cast<uint32_t>(std::stoul(leftTopXString));
+	}
+	catch (std::exception const& e)
+	{
+		throw std::invalid_argument("Can not convert <left top x> to unsigned number");
+	}
+
+	if (leftTopYString[0] == '-')
+	{
+		throw std::invalid_argument("<left top y> is negative. Point's coordinate can not be negative");
+	}
+	uint32_t leftTopY = 0;
+	try
+	{
+		leftTopY = static_cast<uint32_t>(std::stoul(leftTopYString));
+	}
+	catch (std::exception const& e)
+	{
+		throw std::invalid_argument("Can not convert <left top y> to unsigned number");
+	}
+
+	if (widthString[0] == '-')
+	{
+		throw std::invalid_argument("<width> is negative. Point's coordinate can not be negative");
+	}
+	uint32_t width = 0;
+	try
+	{
+		width = static_cast<uint32_t>(std::stoul(widthString));
+	}
+	catch (std::exception const& e)
+	{
+		throw std::invalid_argument("Can not convert <width> to unsigned number");
+	}
+
+	if (heightString[0] == '-')
+	{
+		throw std::invalid_argument("<height> is negative. Point's coordinate can not be negative");
+	}
+	uint32_t height = 0;
+	try
+	{
+		height = static_cast<uint32_t>(std::stoul(heightString));
+	}
+	catch (std::exception const& e)
+	{
+		throw std::invalid_argument("Can not convert <height> to unsigned number");
+	}
+
+	if (outlineColorString[0] == '-')
+	{
+		throw std::invalid_argument("<outline color> is negative. Outline color can not be negative");
+	}
+	uint32_t outlineColor = MIN_HEX_COLOR;
+	try
+	{
+		outlineColor = static_cast<uint32_t>(std::stoul("0x" + outlineColorString, nullptr, 16));
+	}
+	catch (std::exception const& e)
+	{
+		throw std::invalid_argument("Can not convert <outline color> to hex");
+	}
+	if (outlineColor < 0 || outlineColor > MAX_HEX_COLOR)
+	{
+		throw std::invalid_argument("<outline color> can be in 0 .. ffffff");
+	}
+
+	if (fillColorString[0] == '-')
+	{
+		throw std::invalid_argument("<fill color> is negative. Fill color can not be negative");
+	}
+	uint32_t fillColor = 0;
+	try
+	{
+		fillColor = static_cast<uint32_t>(std::stoul("0x" + fillColorString, nullptr, 16));
+	}
+	catch (std::exception const& e)
+	{
+		throw std::invalid_argument("Can not convert <fill color> to hex");
+	}
+	if (fillColor < 0 || fillColor > MAX_HEX_COLOR)
+	{
+		throw std::invalid_argument("<fill color> can be in 0 .. ffffff");
+	}
+
+	CPoint leftTopPoint = CPoint(leftTopX, leftTopY);
+
+	return { leftTopPoint, width, height, outlineColor, fillColor };
 }
 
 CController::CircleArgs CController::ParseCircleArgs(std::istream& args)
 {
-	uint32_t centerX = 0;
-	uint32_t centerY = 0;
-	args >> centerX;
-	args >> centerY;
-	CPoint center = CPoint(centerX, centerY);
-	uint32_t radius = 0;
-	args >> radius;
-	uint32_t outlineColor = 0;
-	args >> std::hex >> outlineColor;
-	uint32_t fillColor = 0;
-	args >> std::hex >> fillColor;
+	std::string argsString;
+	std::getline(args, argsString);
+	const std::vector<std::string> splittedArgs = split(argsString, ' ');
+	if (splittedArgs.size() != 6)
+	{
+		m_output << "Incorrect args count" << std::endl;
+	}
 
-	return { center, radius, outlineColor, fillColor };
+	const std::string centerXString = splittedArgs[1];
+	const std::string centerYString = splittedArgs[2];
+	const std::string radiusString = splittedArgs[3];
+	const std::string outlineColorString = splittedArgs[4];
+	const std::string fillColorString = splittedArgs[5];
+
+	if (centerXString[0] == '-')
+	{
+		throw std::invalid_argument("<center x> is negative. Point's coordinate can not be negative");
+	}
+	uint32_t centerX = 0;
+	try
+	{
+		centerX = static_cast<uint32_t>(std::stoul(centerXString));
+	}
+	catch (std::exception const& e)
+	{
+		throw std::invalid_argument("Can not convert <center x> to unsigned number");
+	}
+
+	if (centerYString[0] == '-')
+	{
+		throw std::invalid_argument("<center y> is negative. Point's coordinate can not be negative");
+	}
+	uint32_t centerY = 0;
+	try
+	{
+		centerY = static_cast<uint32_t>(std::stoul(centerYString));
+	}
+	catch (std::exception const& e)
+	{
+		throw std::invalid_argument("Can not convert <center y> to unsigned number");
+	}
+
+	if (radiusString[0] == '-')
+	{
+		throw std::invalid_argument("<radius> is negative. Point's coordinate can not be negative");
+	}
+	uint32_t radius = 0;
+	try
+	{
+		radius = static_cast<uint32_t>(std::stoul(radiusString));
+	}
+	catch (std::exception const& e)
+	{
+		throw std::invalid_argument("Can not convert <radius> to unsigned number");
+	}
+
+	if (outlineColorString[0] == '-')
+	{
+		throw std::invalid_argument("<outline color> is negative. Outline color can not be negative");
+	}
+	uint32_t outlineColor = MIN_HEX_COLOR;
+	try
+	{
+		outlineColor = static_cast<uint32_t>(std::stoul("0x" + outlineColorString, nullptr, 16));
+	}
+	catch (std::exception const& e)
+	{
+		throw std::invalid_argument("Can not convert <outline color> to hex");
+	}
+	if (outlineColor < 0 || outlineColor > MAX_HEX_COLOR)
+	{
+		throw std::invalid_argument("<outline color> can be in 0 .. ffffff");
+	}
+
+	if (fillColorString[0] == '-')
+	{
+		throw std::invalid_argument("<fill color> is negative. Fill color can not be negative");
+	}
+	uint32_t fillColor = 0;
+	try
+	{
+		fillColor = static_cast<uint32_t>(std::stoul("0x" + fillColorString, nullptr, 16));
+	}
+	catch (std::exception const& e)
+	{
+		throw std::invalid_argument("Can not convert <fill color> to hex");
+	}
+	if (fillColor < 0 || fillColor > MAX_HEX_COLOR)
+	{
+		throw std::invalid_argument("<fill color> can be in 0 .. ffffff");
+	}
+
+	CPoint centerPoint = CPoint(centerX, centerY);
+
+	return { centerPoint, radius, outlineColor, fillColor };
 }
 
-CController::PolygonArgs CController::ParsePolygonArgs(std::istream& args)
+CController::TriangleArgs CController::ParseTriangleArgs(std::istream& args)
 {
-	std::string str1 = "";
-	std::string str2 = "";
-	uint32_t outlineColor = 0;
-	uint32_t fillColor = 0;
-	std::vector<CPoint> points = {};
-
-	args >> str1;
-	args >> str2;
-	while (str1 != ";" && args.peek() != '\n')
+	std::string argsString;
+	std::getline(args, argsString);
+	const std::vector<std::string> splittedArgs = split(argsString, ' ');
+	if (splittedArgs.size() != 9)
 	{
-		uint32_t x = std::stoul(str1);
-		uint32_t y = std::stoul(str2);
-		CPoint point = CPoint(x, y);
-		points.push_back(point);
+		m_output << "Incorrect args count" << std::endl;
+	}
 
-		args >> str1;
-		if (args.peek() != '\n') {
-			args >> str2;
+	CPoint points[3];
+	uint32_t currIndex = 1;
+	std::string arg = std::string();
+	for(int currIndex = 1; currIndex < 7; currIndex++)
+	{
+		arg = splittedArgs[currIndex];
+		if (currIndex % 2 != 0)
+		{
+			try
+			{
+				uint32_t pointX = static_cast<uint32_t>(std::stoul(arg));
+				points[(currIndex - 1) / 2] = CPoint(pointX, 0);
+			}
+			catch (std::exception const& e)
+			{
+				throw std::invalid_argument("Can not convert <point x> to unsigned number");
+			}
+		}
+		else
+		{
+			try
+			{
+				uint32_t pointY = static_cast<uint32_t>(std::stoul(arg));
+				points[(currIndex - 1) / 2].y = pointY;
+			}
+			catch (std::exception const& e)
+			{
+				throw std::invalid_argument("Can not convert <point y> to unsigned number");
+			}
 		}
 	}
-	if (args.peek() != '\n') {
-		args >> std::hex >> outlineColor;
+
+	const std::string outlineColorString = splittedArgs[splittedArgs.size() - 2];
+	const std::string fillColorString = splittedArgs[splittedArgs.size() - 1];
+
+	if (outlineColorString[0] == '-')
+	{
+		throw std::invalid_argument("<outline color> is negative. Outline color can not be negative");
 	}
-	if (args.peek() != '\n') {
-		args >> std::hex >> fillColor;
+	uint32_t outlineColor = MIN_HEX_COLOR;
+	try
+	{
+		outlineColor = static_cast<uint32_t>(std::stoul("0x" + outlineColorString, nullptr, 16));
+	}
+	catch (std::exception const& e)
+	{
+		throw std::invalid_argument("Can not convert <outline color> to hex");
+	}
+	if (outlineColor < 0 || outlineColor > MAX_HEX_COLOR)
+	{
+		throw std::invalid_argument("<outline color> can be in 0 .. ffffff");
 	}
 
-	return { points, outlineColor, fillColor };
+	if (fillColorString[0] == '-')
+	{
+		throw std::invalid_argument("<fill color> is negative. Fill color can not be negative");
+	}
+	uint32_t fillColor = 0;
+	try
+	{
+		fillColor = static_cast<uint32_t>(std::stoul("0x" + fillColorString, nullptr, 16));
+	}
+	catch (std::exception const& e)
+	{
+		throw std::invalid_argument("Can not convert <fill color> to hex");
+	}
+	if (fillColor < 0 || fillColor > MAX_HEX_COLOR)
+	{
+		throw std::invalid_argument("<fill color> can be in 0 .. ffffff");
+	}
+
+	return { {points[0], points[1], points[2]}, outlineColor, fillColor };
 }

@@ -9,9 +9,10 @@ int main()
 	{
 		try
 		{
-			controller.GetShape();
+			std::cout << "> ";
+			controller.HandleCommand();
 		}
-		catch (std::exception& e)
+		catch (std::exception const& e)
 		{
 			std::cout << e.what() << std::endl;
 		}
@@ -22,7 +23,7 @@ int main()
 		controller.DrawShapes();
 		controller.GetShapesInfo();
 	}
-	catch (std::exception& e)
+	catch (std::exception const& e)
 	{
 		std::cout << e.what() << std::endl;
 		return 1;

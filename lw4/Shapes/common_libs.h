@@ -1,11 +1,9 @@
 #pragma once
 #define _USE_MATH_DEFINES
+#include "string_functions.h"
 #include <cstdint>
-#include <string>
-#include <vector>
 #include <cmath>
 #include <istream>
-#include <sstream>
 #include <functional>
 #include <map>
 #include <algorithm>

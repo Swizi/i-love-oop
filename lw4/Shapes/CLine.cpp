@@ -22,7 +22,7 @@ std::string CLine::GetSpecifiedShapeData() const
 	return oss.str();
 }
 
-void CLine::Draw(CCanvas& canvas) const
+void CLine::Draw(ICanvas& canvas) const
 {
 	canvas.DrawLine(m_startPoint, m_endPoint, m_outlineColor);
 }

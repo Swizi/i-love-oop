@@ -8,14 +8,14 @@ class CController
 {
 public:
 	class CController(std::istream& input, std::ostream& output);
-	bool GetShape();
+	bool HandleCommand();
 	bool GetShapesInfo();
 	bool DrawShapes();
 
 private:
 	bool HandleLine(std::istream& args);
 	bool HandleCircle(std::istream& args);
-	bool HandlePolygon(std::istream& args);
+	bool HandleTriangle(std::istream& args);
 	bool HandleRectangle(std::istream& args);
 	bool Help(std::istream& args);
 
@@ -47,13 +47,6 @@ private:
 		uint32_t fillColor;
 	};
 
-	struct PolygonArgs
-	{
-		std::vector<CPoint> points;
-		uint32_t outlineColor;
-		uint32_t fillColor;
-	};
-
 	struct RectangleArgs
 	{
 		CPoint leftTopPoint;
@@ -63,8 +56,16 @@ private:
 		uint32_t fillColor;
 	};
 
+	struct TriangleArgs
+	{
+		CPoint points[3];
+		uint32_t outlineColor;
+		uint32_t fillColor;
+	};
+
 	LineArgs ParseLineArgs(std::istream& args);
 	CircleArgs ParseCircleArgs(std::istream& args);
-	PolygonArgs ParsePolygonArgs(std::istream& args);
+	TriangleArgs ParseTriangleArgs(std::istream& args);
 	RectangleArgs ParseRectangleArgs(std::istream& args);
+
 };

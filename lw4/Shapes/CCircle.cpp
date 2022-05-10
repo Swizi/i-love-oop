@@ -38,7 +38,7 @@ std::string CCircle::GetSpecifiedShapeData() const
 	return oss.str();
 }
 
-void CCircle::Draw(CCanvas& canvas) const
+void CCircle::Draw(ICanvas& canvas) const
 {
 	canvas.DrawCircle(m_centerPoint, m_radius, m_outlineColor, m_fillColor);
 }

@@ -17,7 +17,7 @@ double CRectangle::GetArea() const
 
 double CRectangle::GetPerimeter() const
 {
-	return m_width + m_height;
+	return 2 * (m_width + m_height);
 }
 
 uint32_t CRectangle::GetFillColor() const
@@ -39,7 +39,13 @@ std::string CRectangle::GetSpecifiedShapeData() const
 	return oss.str();
 }
 
-void CRectangle::Draw(CCanvas& canvas) const
+void CRectangle::Draw(ICanvas& canvas) const
 {
-	canvas.DrawRectangle(m_leftTopPoint, m_width, m_height, m_outlineColor, m_fillColor);
+	std::vector<CPoint> points = {};
+	points.push_back(m_leftTopPoint);
+	points.push_back({ m_leftTopPoint.x + m_width, m_leftTopPoint.y });
+	points.push_back({ m_leftTopPoint.x + m_width, m_leftTopPoint.y + m_height });
+	points.push_back({ m_leftTopPoint.x, m_leftTopPoint.y + m_height });
+
+	canvas.DrawPolygon(points, m_outlineColor, m_fillColor);
 }
