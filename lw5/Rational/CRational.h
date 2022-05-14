@@ -32,8 +32,8 @@ public:
 	// ”нарный минус
 	CRational const operator-();
 
-	// >>
-	/*void operator>>(std::istream& in);*/
+	// ¬озвращает представление рационального числа в виде смешанной дроби
+	std::pair<int, CRational> ToCompoundFraction() const;
 
 private:
 	int m_numerator;

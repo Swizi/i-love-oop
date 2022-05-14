@@ -108,56 +108,59 @@ SCENARIO("User has ability to execute binary operations on rational numbers")
 {
 	GIVEN("A binary plus")
 	{
-		WHEN("Add up two rational numbers")
 		{
-			CRational num1 = CRational(1, 1);
-			CRational num2 = CRational(2, 2);
-			CRational result = num1 + num2;
-
-			THEN("Result should be result of its sum")
+			WHEN("Add up two rational numbers")
 			{
-				REQUIRE(result.ToDouble() == 2.0);
-			}
-		}
+				CRational num1 = CRational(1, 1);
+				CRational num2 = CRational(2, 2);
+				CRational result = num1 + num2;
 
-		WHEN("Add up rational number and int")
-		{
-			CRational num1 = CRational(1, 1);
-			int num2 = 2;
-			CRational result = num1 + num2;
-
-			THEN("Result should be result of its sum")
-			{
-				REQUIRE(result.ToDouble() == 3.0);
-			}
-		}
-
-		WHEN("Add up int and rational number")
-		{
-			int num1 = 2;
-			CRational num2 = CRational(1, 1);
-			CRational result = num1 + num2;
-
-			THEN("Result should be result of its sum")
-			{
-				REQUIRE(result.ToDouble() == 3.0);
-			}
-		}
-
-		WHEN("Add up two numbers with integer overflow")
-		{
-			CRational num1 = CRational(INT_MAX + 1, 2);
-			CRational num2 = CRational(INT_MAX, 2);
-			
-			THEN("Adding up should return exception")
-			{
-				try {
-					CRational result = num1 + num2;
-					REQUIRE(false);
-				}
-				catch (const std::exception& e)
+				THEN("Result should be result of its sum")
 				{
-					REQUIRE(!std::string(e.what()).empty());
+					REQUIRE(result.ToDouble() == 2.0);
+				}
+			}
+
+			WHEN("Add up rational number and int")
+			{
+				CRational num1 = CRational(1, 1);
+				int num2 = 2;
+				CRational result = num1 + num2;
+
+				THEN("Result should be result of its sum")
+				{
+					REQUIRE(result.ToDouble() == 3.0);
+				}
+			}
+
+			WHEN("Add up int and rational number")
+			{
+				int num1 = 2;
+				CRational num2 = CRational(1, 1);
+				CRational result = num1 + num2;
+
+				THEN("Result should be result of its sum")
+				{
+					REQUIRE(result.ToDouble() == 3.0);
+				}
+			}
+
+			WHEN("Add up two numbers with integer overflow")
+			{
+				CRational num1 = CRational(INT_MAX, 2);
+				CRational num2 = CRational(INT_MAX, 1);
+
+				THEN("Adding up should return exception")
+				{
+					try
+					{
+						CRational result = num1 + num2;
+						REQUIRE(false);
+					}
+					catch (const std::exception& e)
+					{
+						REQUIRE(!std::string(e.what()).empty());
+					}
 				}
 			}
 		}
@@ -165,7 +168,7 @@ SCENARIO("User has ability to execute binary operations on rational numbers")
 
 	GIVEN("A binary minus")
 	{
-		WHEN("Subtracting two rational numbers")
+		 WHEN("Subtracting two rational numbers")
 		{
 			CRational num1 = CRational(1, 1);
 			CRational num2 = CRational(2, 2);
@@ -177,7 +180,7 @@ SCENARIO("User has ability to execute binary operations on rational numbers")
 			}
 		}
 
-		WHEN("Subtracting rational number and int")
+		 WHEN("Subtracting rational number and int")
 		{
 			CRational num1 = CRational(1, 1);
 			int num2 = 2;
@@ -189,7 +192,7 @@ SCENARIO("User has ability to execute binary operations on rational numbers")
 			}
 		}
 
-		WHEN("Subtracting int and rational number")
+		 WHEN("Subtracting int and rational number")
 		{
 			int num1 = 2;
 			CRational num2 = CRational(1, 1);
@@ -203,8 +206,8 @@ SCENARIO("User has ability to execute binary operations on rational numbers")
 
 		WHEN("Subtracting two numbers with integer overflow")
 		{
-			CRational num1 = CRational(-(INT_MAX + 1), 2);
-			CRational num2 = CRational(INT_MAX, 2);
+			CRational num1 = CRational(INT_MIN, 1);
+			CRational num2 = CRational(INT_MAX, 1);
 
 			THEN("Subtracting should return exception")
 			{
@@ -1037,6 +1040,35 @@ SCENARIO("User has ability to print rational number")
 				REQUIRE(num.GetNumerator() == 1);
 				REQUIRE(num.GetDenominator() == 2);
 			}
+		}
+	}
+}
+
+SCENARIO("User has ability to get compound fractions of rational numbers")
+{
+	GIVEN("Rational number without integer part")
+	{
+		CRational num = CRational(1, 2);
+
+		std::pair<int, CRational> result = num.ToCompoundFraction();
+
+		THEN("Integer part should be default, fraction part should be equals to rational number")
+		{
+			REQUIRE(result.first == 0);
+			REQUIRE(result.second == num);
+		}
+	}
+
+	GIVEN("Rational number with integer part")
+	{
+		CRational num = CRational(3, 2);
+
+		std::pair<int, CRational> result = num.ToCompoundFraction();
+
+		THEN("Integer part should be 1, fraction part should be equals to 1/2")
+		{
+			REQUIRE(result.first == 1);
+			REQUIRE(result.second == CRational(1, 2));
 		}
 	}
 }

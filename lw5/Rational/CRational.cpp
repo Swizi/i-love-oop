@@ -21,15 +21,15 @@ CRational::CRational(int numerator, int denominator)
 		denominator = 1;
 	}
 
-	if (numerator < 0)
+	if (denominator < 0)
 	{
 		numerator *= -1;
 		denominator *= -1;
 	}
 
-	while (gcd(numerator, denominator) != 1)
+	while (gcd(abs(numerator), denominator) != 1)
 	{
-		int gcdNum = gcd(numerator, denominator);
+		int gcdNum = gcd(abs(numerator), denominator);
 		numerator /= gcdNum;
 		denominator /= gcdNum;
 	}
@@ -70,13 +70,50 @@ CRational const CRational::operator -()
 // Бинарный плюс
 CRational const operator+(const CRational& leftOperand, const CRational& rightOperand)
 {
-	if (leftOperand.GetNumerator() > INT_MAX / rightOperand.GetDenominator() ||
-		abs(rightOperand.GetNumerator()) > INT_MAX / leftOperand.GetDenominator() ||
-		leftOperand.GetDenominator() > INT_MAX / rightOperand.GetDenominator() ||
-		abs(leftOperand.GetNumerator()) * rightOperand.GetDenominator() > INT_MAX - abs(rightOperand.GetNumerator()) * leftOperand.GetDenominator()
-	   )
+	if (leftOperand.GetDenominator() > INT_MAX / rightOperand.GetDenominator())
 	{
 		throw std::exception("Operation was not executed. Integer overflow received");
+	}
+	if (leftOperand.GetNumerator() >= 0)
+	{
+		if (leftOperand.GetNumerator() > INT_MAX / rightOperand.GetDenominator())
+		{
+			throw std::exception("Operation was not executed. Integer overflow received");
+		}
+	}
+	else {
+		if (leftOperand.GetNumerator() < INT_MIN / rightOperand.GetDenominator())
+		{
+			throw std::exception("Operation was not executed. Integer overflow received");
+		}
+	}
+	if (rightOperand.GetNumerator() >= 0)
+	{
+		if (rightOperand.GetNumerator() > INT_MAX / leftOperand.GetDenominator())
+		{
+			throw std::exception("Operation was not executed. Integer overflow received");
+		}
+	}
+	else {
+		if (rightOperand.GetNumerator() < INT_MIN / leftOperand.GetDenominator())
+		{
+			throw std::exception("Operation was not executed. Integer overflow received");
+		}
+	}
+
+	if (leftOperand.GetNumerator() >= 0 && rightOperand.GetNumerator() >= 0)
+	{
+		if (leftOperand.GetNumerator() * rightOperand.GetDenominator() > INT_MAX - rightOperand.GetNumerator() * leftOperand.GetDenominator())
+		{
+			throw std::exception("Operation was not executed. Integer overflow received");
+		}
+	}
+	if (leftOperand.GetNumerator() < 0 && rightOperand.GetNumerator() < 0)
+	{
+		if (leftOperand.GetNumerator() * rightOperand.GetDenominator() < INT_MIN - rightOperand.GetNumerator() * leftOperand.GetDenominator())
+		{
+			throw std::exception("Operation was not executed. Integer overflow received");
+		}
 	}
 
 	return CRational(leftOperand.GetNumerator() * rightOperand.GetDenominator() + rightOperand.GetNumerator() * leftOperand.GetDenominator(), leftOperand.GetDenominator() * rightOperand.GetDenominator());
@@ -85,7 +122,8 @@ CRational const operator+(const CRational& leftOperand, const CRational& rightOp
 // Бинарный минус
 CRational const operator-(const CRational& leftOperand, const CRational& rightOperand)
 {
-	CRational rightInvertedOperand = -CRational(rightOperand.GetNumerator(), rightOperand.GetDenominator());
+	CRational rightInvertedOperand = CRational(rightOperand.GetNumerator(), rightOperand.GetDenominator());
+	-rightInvertedOperand;
 	CRational result = leftOperand + rightInvertedOperand;
 
 	return result;
@@ -219,4 +257,14 @@ void operator>>(std::istream& in, CRational& num)
 	}
 
 	num = CRational(numerator, denominator);
+}
+
+std::pair<int, CRational> CRational::ToCompoundFraction() const
+{
+	std::pair<int, CRational> result = { 0, CRational() };
+
+	result.first = m_numerator / m_denominator;
+	result.second = CRational(m_numerator - m_denominator * result.first, m_denominator);
+
+	return result;
 }

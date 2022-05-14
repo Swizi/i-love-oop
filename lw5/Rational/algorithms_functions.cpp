@@ -1,3 +1,5 @@
+#include <iostream>
+
 void swap(int& a, int& b)
 {
 	int c;
@@ -11,5 +13,6 @@ int gcd(int a, int b) {
 		a %= b;
 		swap(a, b);
 	}
+
 	return a;
 }
