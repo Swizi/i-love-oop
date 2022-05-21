@@ -152,15 +152,7 @@ SCENARIO("User has ability to execute binary operations on rational numbers")
 
 				THEN("Adding up should return exception")
 				{
-					try
-					{
-						CRational result = num1 + num2;
-						REQUIRE(false);
-					}
-					catch (const std::exception& e)
-					{
-						REQUIRE(!std::string(e.what()).empty());
-					}
+					REQUIRE_THROWS(num1 + num2);
 				}
 			}
 		}
@@ -211,15 +203,7 @@ SCENARIO("User has ability to execute binary operations on rational numbers")
 
 			THEN("Subtracting should return exception")
 			{
-				try
-				{
-					CRational result = num1 - num2;
-					REQUIRE(false);
-				}
-				catch (const std::exception& e)
-				{
-					REQUIRE(!std::string(e.what()).empty());
-				}
+				REQUIRE_THROWS(num1 - num2);
 			}
 		}
 	}
@@ -272,15 +256,7 @@ SCENARIO("User has ability to execute binary operations on rational numbers")
 
 			THEN("Adding up should return exception")
 			{
-				try
-				{
-					CRational result = num1 * num2;
-					REQUIRE(false);
-				}
-				catch (const std::exception& e)
-				{
-					REQUIRE(!std::string(e.what()).empty());
-				}
+				REQUIRE_THROWS(num1 * num2);
 			}
 		}
 	}
@@ -333,15 +309,7 @@ SCENARIO("User has ability to execute binary operations on rational numbers")
 
 			THEN("Adding up should return exception")
 			{
-				try
-				{
-					CRational result = num1 / num2;
-					REQUIRE(false);
-				}
-				catch (const std::exception& e)
-				{
-					REQUIRE(!std::string(e.what()).empty());
-				}
+				REQUIRE_THROWS(num1 / num2);
 			}
 		}
 	}
@@ -382,15 +350,7 @@ SCENARIO("User has ability to use operations with assignment")
 
 			THEN("Adding up should return exception")
 			{
-				try
-				{
-					num1 += num2;
-					REQUIRE(false);
-				}
-				catch (const std::exception& e)
-				{
-					REQUIRE(!std::string(e.what()).empty());
-				}
+				REQUIRE_THROWS(num1 += num2);
 			}
 		}
 	}
@@ -428,15 +388,7 @@ SCENARIO("User has ability to use operations with assignment")
 
 			THEN("Adding up should return exception")
 			{
-				try
-				{
-					num1 -= num2;
-					REQUIRE(false);
-				}
-				catch (const std::exception& e)
-				{
-					REQUIRE(!std::string(e.what()).empty());
-				}
+				REQUIRE_THROWS(num1 -= num2);
 			}
 		}
 	}
@@ -474,15 +426,7 @@ SCENARIO("User has ability to use operations with assignment")
 
 			THEN("Multiplication should return exception")
 			{
-				try
-				{
-					num1 *= num2;
-					REQUIRE(false);
-				}
-				catch (const std::exception& e)
-				{
-					REQUIRE(!std::string(e.what()).empty());
-				}
+				REQUIRE_THROWS(num1 *= num2);
 			}
 		}
 	}
@@ -520,15 +464,7 @@ SCENARIO("User has ability to use operations with assignment")
 
 			THEN("Division should return exception")
 			{
-				try
-				{
-					num1 /= num2;
-					REQUIRE(false);
-				}
-				catch (const std::exception& e)
-				{
-					REQUIRE(!std::string(e.what()).empty());
-				}
+				REQUIRE_THROWS(num1 /= num2);
 			}
 		}
 	}
@@ -978,15 +914,7 @@ SCENARIO("User has ability to print rational number")
 
 			THEN("Operation should return exception")
 			{
-				try
-				{
-					is >> num;
-					REQUIRE(false);
-				}
-				catch (const std::exception& e)
-				{
-					REQUIRE(!(std::string(e.what()).empty()));
-				}
+				REQUIRE_THROWS(is >> num);
 			}
 		}
 
@@ -997,15 +925,7 @@ SCENARIO("User has ability to print rational number")
 
 			THEN("Operation should return exception")
 			{
-				try
-				{
-					is >> num;
-					REQUIRE(false);
-				}
-				catch (const std::exception& e)
-				{
-					REQUIRE(!(std::string(e.what()).empty()));
-				}
+				REQUIRE_THROWS(is >> num);
 			}
 		}
 
@@ -1016,15 +936,7 @@ SCENARIO("User has ability to print rational number")
 
 			THEN("Operation should return exception")
 			{
-				try
-				{
-					is >> num;
-					REQUIRE(false);
-				}
-				catch (const std::exception& e)
-				{
-					REQUIRE(!(std::string(e.what()).empty()));
-				}
+				REQUIRE_THROWS(is >> num);
 			}
 		}
 
@@ -1069,6 +981,19 @@ SCENARIO("User has ability to get compound fractions of rational numbers")
 		{
 			REQUIRE(result.first == 1);
 			REQUIRE(result.second == CRational(1, 2));
+		}
+	}
+
+	GIVEN("Rational number with negative integer part")
+	{
+		CRational num = CRational(-3, 2);
+
+		std::pair<int, CRational> result = num.ToCompoundFraction();
+
+		THEN("Integer part should be -1, fraction part should be equals to -1/2")
+		{
+			REQUIRE(result.first == -1);
+			REQUIRE(result.second == CRational(-1, 2));
 		}
 	}
 }

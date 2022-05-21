@@ -28,9 +28,9 @@ public:
 	double ToDouble() const;
 
 	// Унарный плюс
-	CRational const operator +();
+	CRational operator +();
 	// Унарный минус
-	CRational const operator-();
+	CRational operator-();
 
 	// Возвращает представление рационального числа в виде смешанной дроби
 	std::pair<int, CRational> ToCompoundFraction() const;
@@ -41,10 +41,10 @@ private:
 };
 
 // Бинарный плюс
-CRational const operator+(const CRational& leftOperand, const CRational& rightOperand);
+CRational operator+(const CRational& leftOperand, const CRational& rightOperand);
 
 // Бинарный минус
-CRational const operator-(const CRational& leftOperand, const CRational& rightOperand);
+CRational operator-(const CRational& leftOperand, const CRational& rightOperand);
 
 // +=
 CRational operator+=(CRational& leftOperand, const CRational& rightOperand);
@@ -53,10 +53,10 @@ CRational operator+=(CRational& leftOperand, const CRational& rightOperand);
 CRational operator-=(CRational& leftOperand, const CRational& rightOperand);
 
 // *
-CRational const operator*(const CRational& leftOperand, const CRational& rightOperand);
+CRational operator*(const CRational& leftOperand, const CRational& rightOperand);
 
 // /
-CRational const operator/(const CRational& leftOperand, const CRational& rightOperand);
+CRational operator/(const CRational& leftOperand, const CRational& rightOperand);
 
 // *=
 CRational operator*=(CRational& leftOperand, const CRational& rightOperand);
