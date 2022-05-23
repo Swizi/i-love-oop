@@ -145,11 +145,15 @@
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="CMyConstIterator.cpp" />
+    <ClCompile Include="CMyIterator.cpp" />
     <ClCompile Include="CMyString.cpp" />
     <ClCompile Include="common_libs.cpp" />
     <ClCompile Include="MyString.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="CMyConstIterator.h" />
+    <ClInclude Include="CMyIterator.h" />
     <ClInclude Include="CMyString.h" />
     <ClInclude Include="common_libs.h" />
   </ItemGroup>

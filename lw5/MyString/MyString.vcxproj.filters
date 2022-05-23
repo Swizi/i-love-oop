@@ -24,12 +24,24 @@
     <ClCompile Include="CMyString.cpp">
       <Filter>Исходные файлы</Filter>
     </ClCompile>
+    <ClCompile Include="CMyIterator.cpp">
+      <Filter>Исходные файлы</Filter>
+    </ClCompile>
+    <ClCompile Include="CMyConstIterator.cpp">
+      <Filter>Исходные файлы</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="CMyString.h">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
     <ClInclude Include="common_libs.h">
+      <Filter>Файлы заголовков</Filter>
+    </ClInclude>
+    <ClInclude Include="CMyIterator.h">
+      <Filter>Файлы заголовков</Filter>
+    </ClInclude>
+    <ClInclude Include="CMyConstIterator.h">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
   </ItemGroup>

@@ -147,10 +147,14 @@
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="..\CMyConstIterator.cpp" />
+    <ClCompile Include="..\CMyIterator.cpp" />
     <ClCompile Include="..\CMyString.cpp" />
     <ClCompile Include="tests.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\CMyConstIterator.h" />
+    <ClInclude Include="..\CMyIterator.h" />
     <ClInclude Include="..\CMyString.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

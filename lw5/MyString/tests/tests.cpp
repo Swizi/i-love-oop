@@ -3,6 +3,8 @@
 #include "../../../Catch2/catch.hpp"
 #include "../CMyString.h"
 
+// Main part of program
+
 SCENARIO("User has ability to create strings")
 {
 	WHEN("User creates string without parameters")
@@ -1020,6 +1022,539 @@ SCENARIO("User can use move constructor and move assignment operator")
 			{
 				REQUIRE(strcmp(sourceStr.GetStringData(), "") == 0);
 				REQUIRE(strcmp(receiveStr.GetStringData(), "") == 0);
+			}
+		}
+	}
+}
+
+// Iterators
+
+SCENARIO("User can use iterators on string")
+{
+	GIVEN("Inconstant iterator")
+	{
+		WHEN("Use begin() ... end() on string")
+		{
+			auto it = CMyString("i like JS");
+			std::string result = "";
+
+			std::for_each(it.begin(), it.end(), [&](auto ch) {
+				result += ch;
+			});
+
+			THEN("Iterator should pass through all string's characters")
+			{
+				REQUIRE(result == "i like JS");
+			}
+		}
+
+		WHEN("Use begin() ... end() on empty string")
+		{
+			auto it = CMyString("");
+			std::string result = "";
+
+			std::for_each(it.begin(), it.end(), [&](auto ch) {
+				result += ch;
+			});
+
+			THEN("Iterator should pass through all string's characters")
+			{
+				REQUIRE(result == "");
+			}
+		}
+
+		WHEN("Use rbegin() ... rend() on string")
+		{
+			auto it = CMyString("i like JS");
+			std::string result = "";
+
+			std::for_each(it.rbegin(), it.rend(), [&](auto ch) {
+				result += ch;
+			});
+
+			THEN("Iterator should pass through all string's characters")
+			{
+				REQUIRE(result == "SJ ekil i");
+			}
+		}
+
+		WHEN("Use rbegin() ... rend() on empty string")
+		{
+			auto it = CMyString("");
+			std::string result = "";
+
+			std::for_each(it.rbegin(), it.rend(), [&](auto ch) {
+				result += ch;
+			});
+
+			THEN("Iterator should pass through all string's characters")
+			{
+				REQUIRE(result == "");
+			}
+		}
+
+		WHEN("Try to change character, that pointed by iterator")
+		{
+			CMyString str = "123";
+			auto it = str.begin();
+
+			*it = '0';
+
+			THEN("Characted should be changed")
+			{
+				REQUIRE(strcmp(str.GetStringData(), "023") == 0);
+			} 
+		}
+
+		WHEN("Try to use access index operator")
+		{
+			CMyString str = "123";
+			auto it = str.begin();
+
+			char ch = it[0];
+
+			THEN("Should return char to which the pointer points")
+			{
+				REQUIRE(ch == '1');
+			}
+		}
+
+		WHEN("Try to change using access index operator")
+		{
+			CMyString str = "123";
+			auto it = str.begin();
+
+			it[0] = '0';
+
+			THEN("String should be changed successfully")
+			{
+				REQUIRE(strcmp(str.GetStringData(), "023") == 0);
+			}
+		}
+
+		WHEN("Use arithmetic with string")
+		{
+			WHEN("Use postfix increment")
+			{
+				CMyString str = CMyString("123");
+				auto it = str.begin();
+
+				auto itResult = it++;
+
+				THEN("Returned value should not be equals to incremented value")
+				{
+					REQUIRE(*it == '2');
+					REQUIRE(*itResult == '1');
+				}
+			}
+
+			WHEN("Use prefix increment")
+			{
+				CMyString str = CMyString("123");
+				auto it = str.begin();
+
+				auto itResult = ++it;
+
+				THEN("Returned value should not be equals to incremented value")
+				{
+					REQUIRE(*it == '2');
+					REQUIRE(*itResult == '2');
+				}
+			}
+
+			WHEN("Use postfix decrement")
+			{
+				CMyString str = CMyString("123");
+				auto it = str.begin();
+				it++;
+
+				auto itResult = it--;
+
+				THEN("Returned value should not be equals to incremented value")
+				{
+					REQUIRE(*it == '1');
+					REQUIRE(*itResult == '2');
+				}
+			}
+
+			WHEN("Use prefix decrement")
+			{
+				CMyString str = CMyString("123");
+				auto it = str.begin();
+				it++;
+
+				auto itResult = --it;
+
+				THEN("Returned value should not be equals to incremented value")
+				{
+					REQUIRE(*it == '1');
+					REQUIRE(*itResult == '1');
+				}
+			}
+
+			WHEN("Try to add up num to iterator")
+			{
+				CMyString str = "123";
+				auto it = str.begin();
+
+				auto resIt = it + 2;
+
+				THEN("Result iterator should points to character and start iterator should not be changed")
+				{
+					REQUIRE(*it == '1');
+					REQUIRE(*resIt == '3');
+				}
+			}
+
+			WHEN("Try to add up iterator to num")
+			{
+				CMyString str = "123";
+				auto it = str.begin();
+
+				auto resIt = 2 + it;
+
+				THEN("Result iterator should points to character and start iterator should not be changed")
+				{
+					REQUIRE(*it == '1');
+					REQUIRE(*resIt == '3');
+				}
+			}
+
+			WHEN("Try to substract two iterators")
+			{
+				CMyString str = "123";
+				auto it = str.begin();
+
+				auto resIt = 2 + it;
+
+				THEN("Subtraction should equals to 2")
+				{
+					REQUIRE(resIt - it == 2);
+					REQUIRE(it - resIt == -2);
+				}
+			}
+		}
+
+		WHEN("Use comparision with string")
+		{
+			WHEN("Use == operation on equals iterators")
+			{
+				CMyString str("i love JS");
+
+				auto it1 = str.begin();
+				auto it2 = str.begin();
+
+				THEN("Result should be true")
+				{
+					REQUIRE(it1 == it2);
+				}
+			}
+
+			WHEN("Use == operation on iterators, that points to equal char")
+			{
+				CMyString str("oogway master");
+
+				auto it1 = str.begin();
+				it1++;
+				auto it2 = str.begin();
+				it2++;
+
+				THEN("Result should be true")
+				{
+					REQUIRE(it1 == it2);
+				}
+			}
+
+			WHEN("Use == operation on unequal iterators")
+			{
+				CMyString str("i love JS");
+
+				auto it1 = str.begin();
+				it1++;
+				auto it2 = str.begin();
+
+				THEN("Result should be false")
+				{
+					REQUIRE(!(it1 == it2));
+				}
+			}
+			WHEN("Use != operation on equal iterators")
+			{
+				CMyString str("i love JS");
+
+				auto it1 = str.begin();
+				auto it2 = str.begin();
+
+				THEN("Result should be false")
+				{
+					REQUIRE(!(it1 != it2));
+				}
+			}
+
+			WHEN("Use != operation on unequal iterators")
+			{
+				CMyString str("i love JS");
+
+				auto it1 = str.begin();
+				it1++;
+				auto it2 = str.begin();
+
+				THEN("Result should be true")
+				{
+					REQUIRE(it1 != it2);
+				}
+			}
+			WHEN("Use < operation with left operand less than right")
+			{
+				CMyString str("abc");
+
+				auto it1 = str.begin();
+				auto it2 = str.end();
+
+				THEN("Result should be true")
+				{
+					REQUIRE(it1 < it2);
+				}
+			}
+			WHEN("Use < operation with left operand greater than right")
+			{
+				CMyString str("abc");
+
+				auto it1 = str.end();
+				auto it2 = str.begin();
+
+				THEN("Result should be false")
+				{
+					REQUIRE(!(it1 < it2));
+				}
+			}
+			WHEN("Use < operation with left operand equals to right")
+			{
+				CMyString str("aba");
+
+				auto it1 = str.end();
+				auto it2 = str.begin();
+
+				THEN("Result should be false")
+				{
+					REQUIRE(!(it1 < it2));
+				}
+			}
+			WHEN("Use <= operation with left operand less than right")
+			{
+				CMyString str("abc");
+
+				auto it1 = str.begin();
+				auto it2 = str.end();
+
+				THEN("Result should be true")
+				{
+					REQUIRE(it1 <= it2);
+				}
+			}
+			WHEN("Use <= operation with left operand greater than right")
+			{
+				CMyString str("abc");
+
+				auto it1 = str.end();
+				auto it2 = str.begin();
+
+				THEN("Result should be false")
+				{
+					REQUIRE(!(it1 <= it2));
+				}
+			}
+			WHEN("Use <= operation with left operand equals to right")
+			{
+				CMyString str("aba");
+
+				auto it1 = str.begin();
+				auto it2 = str.begin();
+
+				THEN("Result should be true")
+				{
+					REQUIRE(it1 <= it2);
+				}
+			}
+			WHEN("Use > operation with left operand less than right")
+			{
+				CMyString str("abc");
+
+				auto it1 = str.begin();
+				auto it2 = str.end();
+
+				THEN("Result should be false")
+				{
+					REQUIRE(!(it1 > it2));
+				}
+			}
+			WHEN("Use > operation with left operand greater than right")
+			{
+				CMyString str("abc");
+
+				auto it1 = str.end();
+				auto it2 = str.begin();
+
+				THEN("Result should be true")
+				{
+					REQUIRE(it1 > it2);
+				}
+			}
+			WHEN("Use > operation with left operand equals to right")
+			{
+				CMyString str("aba");
+
+				auto it1 = str.begin();
+				auto it2 = str.begin();
+
+				THEN("Result should be false")
+				{
+					REQUIRE(!(it1 > it2));
+				}
+			}
+			WHEN("Use >= operation with left operand less than right")
+			{
+				CMyString str("abc");
+
+				auto it1 = str.begin();
+				auto it2 = str.end();
+
+				THEN("Result should be false")
+				{
+					REQUIRE(!(it1 >= it2));
+				}
+			}
+			WHEN("Use >= operation with left operand greater than right")
+			{
+				CMyString str("abc");
+
+				auto it1 = str.end();
+				auto it2 = str.begin();
+
+				THEN("Result should be true")
+				{
+					REQUIRE(it1 >= it2);
+				}
+			}
+			WHEN("Use >= operation with left operand equals to right")
+			{
+				CMyString str("aba");
+
+				auto it1 = str.begin();
+				auto it2 = str.begin();
+
+				THEN("Result should be true")
+				{
+					REQUIRE(it1 >= it2);
+				}
+			}
+		}
+
+		WHEN("Use range-based version operator for with not empty string")
+		{
+			CMyString str("123");
+			std::string res = "";
+
+			for (auto& ch : str)
+			{
+				res += ch;
+			}
+
+			THEN("Result should contain all characters from string")
+			{
+				REQUIRE(res == "123");
+			}
+		}
+
+		WHEN("Use range-based version operator for with empty string")
+		{
+			CMyString str("");
+			std::string res = "";
+
+			for (auto& ch : str)
+			{
+				res += ch;
+			}
+
+			THEN("Result should contain all characters from string")
+			{
+				REQUIRE(res == "");
+			}
+		}
+	}
+
+	GIVEN("Constant iterator")
+	{
+		WHEN("Use cbegin() ... cend() on string")
+		{
+			auto it = CMyString("i like JS");
+			std::string result = "";
+
+			std::for_each(it.cbegin(), it.cend(), [&](auto ch) {
+				result += ch;
+			});
+
+			THEN("Iterator should pass through all string's characters")
+			{
+				REQUIRE(result == "i like JS");
+			}
+		}
+
+		WHEN("Use cbegin() ... cend() on empty string")
+		{
+			auto it = CMyString("");
+			std::string result = "";
+
+			std::for_each(it.cbegin(), it.cend(), [&](auto ch) {
+				result += ch;
+			});
+
+			THEN("Iterator should pass through all string's characters")
+			{
+				REQUIRE(result == "");
+			}
+		}
+
+		WHEN("Use crbegin() ... crend() on string")
+		{
+			auto it = CMyString("i like JS");
+			std::string result = "";
+
+			std::for_each(it.crbegin(), it.crend(), [&](auto ch) {
+				result += ch;
+			});
+
+			THEN("Iterator should pass through all string's characters")
+			{
+				REQUIRE(result == "SJ ekil i");
+			}
+		}
+
+		WHEN("Use crbegin() ... crend() on empty string")
+		{
+			auto it = CMyString("");
+			std::string result = "";
+
+			std::for_each(it.crbegin(), it.crend(), [&](auto ch) {
+				result += ch;
+			});
+
+			THEN("Iterator should pass through all string's characters")
+			{
+				REQUIRE(result == "");
+			}
+		}
+
+		WHEN("Try to use access index operator")
+		{
+			CMyString str = "123";
+			auto it = str.begin();
+
+			char ch = it[0];
+
+			THEN("Should return char to which the pointer points")
+			{
+				REQUIRE(ch == '1');
 			}
 		}
 	}

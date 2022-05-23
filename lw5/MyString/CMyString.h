@@ -1,5 +1,7 @@
 #pragma once
 #include "common_libs.h"
+#include "CMyIterator.h"
+#include "CMyConstIterator.h"
 
 class CMyString
 {
@@ -20,7 +22,7 @@ public:
 
 	// перемещающий конструктор (для компиляторов, совместимых с C++11)
 	//  реализуется совместно с перемещающим оператором присваивания 
-	CMyString(CMyString&& other);
+	CMyString(CMyString&& other) noexcept;
 
 	// конструктор, инициализирующий строку данными из 
     // строки стандартной библиотеки C++
@@ -47,11 +49,23 @@ public:
 	CMyString& operator=(const CMyString& other);
 
 	// && =
-	CMyString& operator=(CMyString&& other);
+	CMyString& operator=(CMyString&& other) noexcept;
 
 	// []
 	char const operator[](const size_t index) const;
 	char& operator[](const size_t index);
+
+	// CMyIterator
+	CMyIterator begin();
+	CMyIterator end();
+	std::reverse_iterator<CMyIterator> rbegin();
+	std::reverse_iterator<CMyIterator> rend();
+
+	// CMyConstIterator
+	CMyConstIterator cbegin();
+	CMyConstIterator cend();
+	std::reverse_iterator<CMyConstIterator> crbegin();
+	std::reverse_iterator<CMyConstIterator> crend();
 
 private:
 	char* m_string;
