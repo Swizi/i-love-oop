@@ -73,28 +73,28 @@ private:
 };
 
 // +
-CMyString const operator+(const CMyString& leftOperand, const CMyString& rightOperand);
+CMyString operator+(const CMyString& leftOperand, const CMyString& rightOperand);
 
 // +=
 CMyString operator+=(CMyString& leftOperand, const CMyString& rightOperand);
 
 // ==
-bool const operator==(const CMyString& leftOperand, const CMyString& rightOperand);
+bool operator==(const CMyString& leftOperand, const CMyString& rightOperand);
 
 // !=
-bool const operator!=(const CMyString& leftOperand, const CMyString& rightOperand);
+bool operator!=(const CMyString& leftOperand, const CMyString& rightOperand);
 
 // <
-bool const operator<(const CMyString& leftOperand, const CMyString& rightOperand);
+bool operator<(const CMyString& leftOperand, const CMyString& rightOperand);
 
 // <=
-bool const operator<=(const CMyString& leftOperand, const CMyString& rightOperand);
+bool operator<=(const CMyString& leftOperand, const CMyString& rightOperand);
 
 // >
-bool const operator>(const CMyString& leftOperand, const CMyString& rightOperand);
+bool operator>(const CMyString& leftOperand, const CMyString& rightOperand);
 
 // >=
-bool const operator>=(const CMyString& leftOperand, const CMyString& rightOperand);
+bool operator>=(const CMyString& leftOperand, const CMyString& rightOperand);
 
 // <<
 std::ostream& operator<<(std::ostream& out, const CMyString& str);

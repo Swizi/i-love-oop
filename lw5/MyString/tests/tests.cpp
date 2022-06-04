@@ -13,7 +13,6 @@ SCENARIO("User has ability to create strings")
 
 		THEN("String data should be empty")
 		{
-			REQUIRE(str.GetStringData()[0] == '\0');
 			REQUIRE(strcmp(str.GetStringData(), "") == 0);
 		}
 
@@ -29,7 +28,6 @@ SCENARIO("User has ability to create strings")
 
 		THEN("String data should be equals to ''")
 		{
-			REQUIRE(str.GetStringData()[0] == '\0');
 			REQUIRE(strcmp(str.GetStringData(), "") == 0);
 		}
 
@@ -45,7 +43,6 @@ SCENARIO("User has ability to create strings")
 
 		THEN("String data should be equals '123'")
 		{
-			REQUIRE(str.GetStringData()[3] == '\0');
 			REQUIRE(strcmp(str.GetStringData(), "123") == 0);
 		}
 
@@ -61,7 +58,6 @@ SCENARIO("User has ability to create strings")
 
 		THEN("String data should be equals to '123'")
 		{
-			REQUIRE(str.GetStringData()[3] == '\0');
 			REQUIRE(strcmp(str.GetStringData(), "123") == 0);
 		}
 
@@ -71,21 +67,12 @@ SCENARIO("User has ability to create strings")
 		}
 	}
 
-	WHEN("User creates string with two incorrect parameters('123', 4)")
-	{
-		THEN("Creation should lead to exception")
-		{
-			REQUIRE_THROWS(CMyString("123", 4));
-		}
-	}
-
 	WHEN("User creates string with two parameters('', 0)")
 	{
 		CMyString str = CMyString("", 0);
 
 		THEN("String's data should be ''")
 		{
-			REQUIRE(str.GetStringData()[0] == '\0');
 			REQUIRE(strcmp(str.GetStringData(), "") == 0);
 		}
 
@@ -102,7 +89,6 @@ SCENARIO("User has ability to create strings")
 
 		THEN("String's data should be '123'")
 		{
-			REQUIRE(myString.GetStringData()[3] == '\0');
 			REQUIRE(strcmp(myString.GetStringData(), "123") == 0);
 		}
 
@@ -119,7 +105,6 @@ SCENARIO("User has ability to create strings")
 
 		THEN("String's data should be ''")
 		{
-			REQUIRE(myString.GetStringData()[0] == '\0');
 			REQUIRE(strcmp(myString.GetStringData(), "") == 0);
 		}
 
@@ -136,7 +121,6 @@ SCENARIO("User has ability to create strings")
 
 		THEN("String's data should be equals to copied data('123')")
 		{
-			REQUIRE(hostString.GetStringData()[3] == '\0');
 			REQUIRE(strcmp(hostString.GetStringData(), "123") == 0);
 		}
 
@@ -230,7 +214,6 @@ SCENARIO("User has ability to get string's data")
 
 		THEN("String's data should be empty")
 		{
-			REQUIRE(str.GetStringData()[0] == '\0');
 			REQUIRE(strcmp(str.GetStringData(), "") == 0);
 		}
 	}
@@ -241,7 +224,6 @@ SCENARIO("User has ability to get string's data")
 
 		THEN("String's data should be equals to not empty string('123')")
 		{
-			REQUIRE(str.GetStringData()[3] == '\0');
 			REQUIRE(strcmp(str.GetStringData(), "123") == 0);
 		}
 	}
@@ -256,7 +238,6 @@ SCENARIO("User has ability to get substring's of string")
 
 		THEN("Substring should be correctly created")
 		{
-			REQUIRE(substring.GetStringData()[2] == '\0');
 			REQUIRE(strcmp(substring.GetStringData(), "12") == 0);
 			REQUIRE(substring.GetLength() == 2);
 		}
@@ -269,7 +250,6 @@ SCENARIO("User has ability to get substring's of string")
 
 		THEN("Substring should be correctly created")
 		{
-			REQUIRE(substring.GetStringData()[3] == '\0');
 			REQUIRE(strcmp(substring.GetStringData(), "234") == 0);
 			REQUIRE(substring.GetLength() == 3);
 		}
@@ -312,7 +292,6 @@ SCENARIO("User has ability to get substring's of string")
 
 		THEN("Substring should be empty")
 		{
-			REQUIRE(substring.GetStringData()[0] == '\0');
 			REQUIRE(strcmp(substring.GetStringData(), "") == 0);
 			REQUIRE(substring.GetLength() == 0);
 		}
@@ -329,7 +308,6 @@ SCENARIO("User has ability to clear strings")
 
 		THEN("String should be empty")
 		{
-			REQUIRE(str.GetStringData()[0] == '\0');
 			REQUIRE(strcmp(str.GetStringData(), "") == 0);
 			REQUIRE(str.GetLength() == 0);
 		}
@@ -343,7 +321,6 @@ SCENARIO("User has ability to clear strings")
 
 		THEN("String should be empty")
 		{
-			REQUIRE(str.GetStringData()[0] == '\0');
 			REQUIRE(strcmp(str.GetStringData(), "") == 0);
 			REQUIRE(str.GetLength() == 0);
 		}
@@ -361,7 +338,6 @@ SCENARIO("User has ability to use assignment operations on string")
 		{
 			str2 = str1;
 
-			REQUIRE(str2.GetStringData()[0] == '\0');
 			REQUIRE(strcmp(str2.GetStringData(), "") == 0);
 			REQUIRE(str2.GetLength() == 0);
 		}
@@ -370,7 +346,6 @@ SCENARIO("User has ability to use assignment operations on string")
 		{
 			CMyString str3 = (str2 = str1);
 
-			REQUIRE(str3.GetStringData()[0] == '\0');
 			REQUIRE(strcmp(str3.GetStringData(), "") == 0);
 			REQUIRE(str3.GetLength() == 0);
 		}
@@ -414,10 +389,8 @@ SCENARIO("User has ability to use assignment operations on string")
 
 			THEN("Result should contain empty string")
 			{
-				REQUIRE(str1.GetStringData()[0] == '\0');
 				REQUIRE(strcmp(str1.GetStringData(), "") == 0);
 				REQUIRE(str1.GetLength() == 0);
-				REQUIRE(str2.GetStringData()[0] == '\0');
 				REQUIRE(strcmp(str2.GetStringData(), "") == 0);
 				REQUIRE(str2.GetLength() == 0);
 			}
@@ -432,7 +405,6 @@ SCENARIO("User has ability to use assignment operations on string")
 
 			THEN("Result should contain their contatenation")
 			{
-				REQUIRE(str1.GetStringData()[4] == '\0');
 				REQUIRE(strcmp(str1.GetStringData(), "1234") == 0);
 				REQUIRE(str1.GetLength() == 4);
 			}
@@ -447,9 +419,24 @@ SCENARIO("User has ability to use assignment operations on string")
 
 			THEN("+= operation should return str1 result")
 			{
-				REQUIRE(result.GetStringData()[4] == '\0');
 				REQUIRE(strcmp(result.GetStringData(), "1234") == 0);
 				REQUIRE(result.GetLength() == 4);
+			}
+		}
+
+		WHEN("Use addition operation on result of addition operation")
+		{
+			CMyString str1("12");
+			CMyString str2("34");
+			CMyString str3("56");
+
+			str1 += (str2 += str3);
+			// (str1 += str2) += str3;
+
+			THEN("+= operation should return concatenation result")
+			{
+				REQUIRE(strcmp(str2.GetStringData(), "3456") == 0);
+				REQUIRE(strcmp(str1.GetStringData(), "123456") == 0);
 			}
 		}
 	}
@@ -483,7 +470,6 @@ SCENARIO("User can contatenate strings")
 
 		THEN("Result should contain empty string")
 		{
-			REQUIRE(result.GetStringData()[0] == '\0');
 			REQUIRE(strcmp(result.GetStringData(), "") == 0);
 			REQUIRE(result.GetLength() == 0);
 		}
@@ -498,7 +484,6 @@ SCENARIO("User can contatenate strings")
 
 		THEN("Result should contain their contatenation")
 		{
-			REQUIRE(result.GetStringData()[4] == '\0');
 			REQUIRE(strcmp(result.GetStringData(), "1234") == 0);
 			REQUIRE(result.GetLength() == 4);
 		}
@@ -509,14 +494,14 @@ SCENARIO("User can compare strings")
 {
 	WHEN("Use == operation")
 	{
-		WHEN("Two strings are equal")
+		WHEN("Two strings, which one of them with zero symbol")
 		{
-			CMyString str1("123");
+			CMyString str1("123\0a", 5);
 			CMyString str2("123");
 
-			THEN("Result should be true")
+			THEN("Result should be false")
 			{
-				REQUIRE(str1 == str2);
+				REQUIRE(str1 != str2);
 			}
 		}
 
@@ -545,6 +530,17 @@ SCENARIO("User can compare strings")
 
 	WHEN("Use != operation")
 	{
+		WHEN("Two strings, which one of them with zero symbol")
+		{
+			CMyString str1("123\0a", 5);
+			CMyString str2("123");
+
+			THEN("Result should be true")
+			{
+				REQUIRE(str1 != str2);
+			}
+		}
+
 		WHEN("Two strings are equal")
 		{
 			CMyString str1("123");
@@ -581,6 +577,17 @@ SCENARIO("User can compare strings")
 
 	WHEN("Use < operation")
 	{
+		WHEN("Two strings, which one of them with zero symbol")
+		{
+			CMyString str1("123\0a", 5);
+			CMyString str2("123");
+
+			THEN("Result should be false")
+			{
+				REQUIRE(!(str1 < str2));
+			}
+		}
+
 		WHEN("Left operand is less than right")
 		{
 			CMyString str1("0");
@@ -650,6 +657,17 @@ SCENARIO("User can compare strings")
 
 	WHEN("Use <= operation")
 	{
+		WHEN("Two strings, which one of them with zero symbol")
+		{
+			CMyString str1("123\0a", 5);
+			CMyString str2("123");
+
+			THEN("Result should be false")
+			{
+				REQUIRE(!(str1 <= str2));
+			}
+		}
+
 		WHEN("Left operand is less than right")
 		{
 			CMyString str1("0");
@@ -719,6 +737,17 @@ SCENARIO("User can compare strings")
 
 	WHEN("Use > operation")
 	{
+		WHEN("Two strings, which one of them with zero symbol")
+		{
+			CMyString str1("123\0a", 5);
+			CMyString str2("123");
+
+			THEN("Result should be true")
+			{
+				REQUIRE(str1 > str2);
+			}
+		}
+
 		WHEN("Left operand is less than right")
 		{
 			CMyString str1("0");
@@ -788,6 +817,17 @@ SCENARIO("User can compare strings")
 
 	WHEN("Use >= operation")
 	{
+		WHEN("Two strings, which one of them with zero symbol")
+		{
+			CMyString str1("123\0a", 5);
+			CMyString str2("123");
+
+			THEN("Result should be true")
+			{
+				REQUIRE(str1 >= str2);
+			}
+		}
+
 		WHEN("Left operand is less than right")
 		{
 			CMyString str1("0");
@@ -940,7 +980,22 @@ SCENARIO("User can use streams to print and get strings")
 
 		THEN("String variable should contain this value")
 		{
+
 			REQUIRE(strcmp(str.GetStringData(), "123") == 0);
+		}
+	}
+
+	WHEN("Use >> operation with not empty string with space")
+	{
+		std::istringstream iss("123 a123");
+		CMyString str;
+
+		iss >> str;
+
+		THEN("String variable should contain this value")
+		{
+
+			REQUIRE(memcmp(str.GetStringData(), "123", 3) == 0);
 		}
 	}
 

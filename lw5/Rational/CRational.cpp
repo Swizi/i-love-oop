@@ -221,6 +221,7 @@ bool const operator==(const CRational& leftOperand, const CRational& rightOperan
 }
 
 // !=
+// TODO: убрать const у bool
 bool const operator!=(const CRational& leftOperand, const CRational& rightOperand)
 {
 	return !(leftOperand == rightOperand);

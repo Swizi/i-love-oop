@@ -315,6 +315,14 @@ SCENARIO("User has ability to execute binary operations on rational numbers")
 	}
 }
 
+SCENARIO("test")
+{
+	// TODO: не компилируется
+	//CRational r{ 1 };
+	//(r += 2) += CRational(3);
+	//REQUIRE(r == 6);
+}
+
 SCENARIO("User has ability to use operations with assignment")
 {
 	GIVEN("+=")
