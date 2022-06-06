@@ -3,15 +3,21 @@
 int main()
 {
 	std::string line;
-	std::cin >> line;
 
-	try
+	// TODO: —читывать урлы, пока пользов. не закончит ввод
+	while (!std::cin.eof() && !std::cin.fail())
 	{
-		CHttpUrl httpUrl = CHttpUrl(line);
-	}
-	catch (std::exception& e)
-	{
-		std::cout << e.what() << std::endl;
+		std::cin >> line;
+
+		try
+		{
+			CHttpUrl httpUrl = CHttpUrl(line);
+			std::cout << "Url is correct" << std::endl;
+		}
+		catch (std::exception& e)
+		{
+			std::cout << e.what() << std::endl;
+		}
 	}
 
 	return 0;

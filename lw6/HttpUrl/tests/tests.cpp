@@ -137,6 +137,14 @@ SCENARIO("User has ability to create urls with domain")
 			REQUIRE_THROWS(CHttpUrl("http://0.0.0.0"));
 		}
 	}
+
+	WHEN("User creates url with incorrect TLD")
+	{
+		THEN("Exception should be returned")
+		{
+			REQUIRE_THROWS(CHttpUrl("http://g.c"));
+		}
+	}
 }
 
 SCENARIO("User has ability to create urls with port")
@@ -163,9 +171,35 @@ SCENARIO("User has ability to create urls with port")
 
 	WHEN("User creates url with specific port(123)")
 	{
+		CHttpUrl url = CHttpUrl("http://google.com:123");
+
 		THEN("Exception should be returned")
 		{
-			REQUIRE_THROWS(CHttpUrl("http://google.com:123"));
+			REQUIRE(url.GetPort() == 123);
+		}
+	}
+
+	WHEN("User creates url with port, greater than available(65535)")
+	{
+		THEN("Exception should be returned")
+		{
+			REQUIRE_THROWS(CHttpUrl("http://google.com:65536"));
+		}
+	}
+
+	WHEN("User creates url with port, less than 10")
+	{
+		THEN("Exception should be returned")
+		{
+			REQUIRE_THROWS(CHttpUrl("http://google.com:6"));
+		}
+	}
+
+	WHEN("User creates url with negative port")
+	{
+		THEN("Exception should be returned")
+		{
+			REQUIRE_THROWS(CHttpUrl("http://google.com:-80"));
 		}
 	}
 }
@@ -221,6 +255,36 @@ SCENARIO("User has ability to create urls with document")
 		THEN("Document should be successfully saved")
 		{
 			REQUIRE(url.GetDocument() == "/blah_blah_(wikipedia)");
+		}
+	}
+
+	WHEN("User creates url with document with query string")
+	{
+		CHttpUrl url = CHttpUrl("http://google.com?q=how%20to%20make%20programm");
+
+		THEN("Document should not contain query string")
+		{
+			REQUIRE(url.GetDocument() == "/index.html");
+		}
+	}
+
+	WHEN("User creates url with document with id")
+	{
+		CHttpUrl url = CHttpUrl("http://google.com#block1");
+
+		THEN("Document should not contain id")
+		{
+			REQUIRE(url.GetDocument() == "/index.html");
+		}
+	}
+
+	WHEN("User creates url with document with id and query string")
+	{
+		CHttpUrl url = CHttpUrl("http://google.com/search.html?q=vkontakte&utm_source=yandex#block1");
+
+		THEN("Document should not contain id and query string")
+		{
+			REQUIRE(url.GetDocument() == "/search.html");
 		}
 	}
 }

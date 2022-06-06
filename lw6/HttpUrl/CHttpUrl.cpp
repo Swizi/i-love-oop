@@ -21,10 +21,10 @@ const boost::regex protocolRegexp("(?:(?:(?:http[s]?):)?\\/\\/)", boost::regex_c
 const boost::regex domainRegexp("(?:(?!(?:10|127)(?:\\.\\d{1,3}){3})(?!(?:169\\.254|192\\.168)(?:\\.\\d{1,3}){2})(?!172\\.(?:1[6-9]|2\\d|3[0-1])(?:\\.\\d{1,3}){2})(?:[1-9]\\d?|1\\d\\d|2[01]\\d|22[0-3])(?:\\.(?:1?\\d{1,2}|2[0-4]\\d|25[0-5])){2}(?:\\.(?:[1-9]\\d?|1\\d\\d|2[0-4]\\d|25[0-4]))|(?:(?:[a-z0-9\\u00a1-\\uffff][a-z0-9\\u00a1-\\uffff_-]{0,62})?[a-z0-9\\u00a1-\\uffff]\\.)+(?:[a-z\\u00a1-\\uffff]{2,}\\.?))", boost::regex_constants::ECMAScript);
 const boost::regex protocolDomainRegexp("(?:(?:(?:http[s]?):)?\\/\\/)(?:(?!(?:10|127)(?:\\.\\d{1,3}){3})(?!(?:169\\.254|192\\.168)(?:\\.\\d{1,3}){2})(?!172\\.(?:1[6-9]|2\\d|3[0-1])(?:\\.\\d{1,3}){2})(?:[1-9]\\d?|1\\d\\d|2[01]\\d|22[0-3])(?:\\.(?:1?\\d{1,2}|2[0-4]\\d|25[0-5])){2}(?:\\.(?:[1-9]\\d?|1\\d\\d|2[0-4]\\d|25[0-4]))|(?:(?:[a-z0-9\\u00a1-\\uffff][a-z0-9\\u00a1-\\uffff_-]{0,62})?[a-z0-9\\u00a1-\\uffff]\\.)+(?:[a-z\\u00a1-\\uffff]{2,}\\.?))", boost::regex_constants::ECMAScript);
 // Port
-const boost::regex portRegexp("(?::\\d{2,5})", boost::regex_constants::ECMAScript);
+const boost::regex portRegexp("(?::-?\\d{1,5})", boost::regex_constants::ECMAScript);
 const boost::regex protocolDomainPortRegexp("(?:(?:(?:http[s]?):)?\\/\\/)(?:(?!(?:10|127)(?:\\.\\d{1,3}){3})(?!(?:169\\.254|192\\.168)(?:\\.\\d{1,3}){2})(?!172\\.(?:1[6-9]|2\\d|3[0-1])(?:\\.\\d{1,3}){2})(?:[1-9]\\d?|1\\d\\d|2[01]\\d|22[0-3])(?:\\.(?:1?\\d{1,2}|2[0-4]\\d|25[0-5])){2}(?:\\.(?:[1-9]\\d?|1\\d\\d|2[0-4]\\d|25[0-4]))|(?:(?:[a-z0-9\\u00a1-\\uffff][a-z0-9\\u00a1-\\uffff_-]{0,62})?[a-z0-9\\u00a1-\\uffff]\\.)+(?:[a-z\\u00a1-\\uffff]{2,}\\.?))(?::\\d{2,5})?", boost::regex_constants::ECMAScript);
 // Document
-const boost::regex documentRegexp("(?:[/?#]\\S*)", boost::regex_constants::ECMAScript);
+const boost::regex documentRegexp("(?:[/][a-z0-9@/\\-._~!$&'()*+,;=:@%]*)", boost::regex_constants::ECMAScript);
 
 
 std::string ParseDocument(const std::string& url)
@@ -34,6 +34,7 @@ std::string ParseDocument(const std::string& url)
 	boost::smatch protocolDomainPortSm;
 
 	boost::regex_search(url, protocolDomainPortSm, protocolDomainPortRegexp);
+	const std::string strBeforeDocument = std::string(protocolDomainPortSm[0].first, protocolDomainPortSm[0].second);
 	const std::string strAfterPort = protocolDomainPortSm.suffix();
 	const bool isDocumentExists = boost::regex_search(strAfterPort, documentSm, documentRegexp);
 	if (!isDocumentExists)
@@ -47,10 +48,10 @@ std::string ParseDocument(const std::string& url)
 	if (documentSm.size() == 1)
 	{
 		document = std::string(documentSm[0].first, documentSm[0].second);
-		if (document == "/")
-		{
-			document = DEFAULT_DOCUMENT;
-		}
+	}
+	if (document == "/")
+	{
+		document = DEFAULT_DOCUMENT;
 	}
 
 	return document;
@@ -76,7 +77,20 @@ unsigned short ParsePort(const std::string& url, Protocol protocol)
 		const std::string portStr = std::string(portSm[0].first+1, portSm[0].second);
 		if (portStr.size() != 0)
 		{
-			port = (unsigned short)strtoul(portStr.c_str(), NULL, 0);
+			const int portNum = std::stoi(portStr.c_str());
+			if (portNum < 0)
+			{
+				throw CUrlParsingError("Port can not be negative");
+			}
+			if (portNum < 10)
+			{
+				throw CUrlParsingError("Port should be greater than 9");
+			}
+			if (portNum > 65535)
+			{
+				throw CUrlParsingError("Port can not be greater than 65535");
+			}
+			port = portNum;
 		}
 	}
 
@@ -92,7 +106,7 @@ std::string ParseDomain(const std::string& url)
 	const bool isDomainExists = boost::regex_search(url, domainSm, domainRegexp);
 	if (!isDomainExists)
 	{
-		throw CUrlParsingError("Domain is empty");
+		throw CUrlParsingError("Domain is incorrect");
 	}
 	if (domainSm.size() > 1)
 	{
@@ -117,7 +131,7 @@ Protocol ParseProtocol(const std::string& url)
 	bool isProtocolExists = boost::regex_search(url, protocolSm, protocolRegexp);
 	if (!isProtocolExists)
 	{
-		throw CUrlParsingError("Protocol in incorrect");
+		throw CUrlParsingError("Protocol is incorrect");
 	}
 	if (isProtocolExists)
 	{
@@ -182,15 +196,6 @@ CHttpUrl::CHttpUrl(std::string const& url)
 	, m_port(ParsePort(lower(url), m_protocol))
 	, m_document(ParseDocument(lower(url)))
 {
-	
-	if (m_protocol == Protocol::HTTP && m_port != defaultPorts.at(Protocol::HTTP))
-	{
-		throw std::invalid_argument("Port should be 80");
-	}
-	if (m_protocol == Protocol::HTTPS && m_port != defaultPorts.at(Protocol::HTTPS))
-	{
-		throw std::invalid_argument("Port should be 443");
-	}
 	boost::smatch urlSm;
 	if (!boost::regex_search(url, urlSm, urlRegexp))
 	{
@@ -240,14 +245,7 @@ CHttpUrl::CHttpUrl(
 	unsigned short port) :
 	CHttpUrl(domain, document, protocol)
 {
-	if (m_protocol == Protocol::HTTP && port != defaultPorts.at(Protocol::HTTP))
-	{
-		throw std::invalid_argument("Port should be 80");
-	}
-	if (m_protocol == Protocol::HTTPS && port != defaultPorts.at(Protocol::HTTPS))
-	{
-		throw std::invalid_argument("Port should be 443");
-	}
+	m_port = port;
 }
 
 Protocol CHttpUrl::GetProtocol() const
