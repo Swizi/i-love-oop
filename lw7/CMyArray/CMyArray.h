@@ -1,8 +1,67 @@
 #pragma once
+#include <iterator>
+#include <stdexcept>
 
 template <typename T>
 class CMyArray
 {
+	class CMyIterator
+	{
+	public:
+		using iterator_category = std::forward_iterator_tag;
+		using difference_type = std::ptrdiff_t;
+		using value_type = T;
+		using pointer = T*;
+		using reference = T&;
+
+		CMyIterator()
+			: curr(nullptr)
+		{
+		}
+		CMyIterator(T* first)
+			: curr(first)
+		{
+		}
+
+		CMyIterator operator++(int)
+		{
+			return curr++;
+		}
+		CMyIterator operator--(int)
+		{
+			return curr--;
+		}
+		CMyIterator operator++()
+		{
+			return ++curr;
+		}
+		CMyIterator operator--()
+		{
+			return --curr;
+		}
+
+		reference operator*()
+		{
+			return *curr;
+		}
+		pointer operator->()
+		{
+			return curr;
+		}
+
+		reference operator[](ptrdiff_t diff)
+		{
+			return *(curr + diff);
+		}
+
+		bool operator!=(const CMyIterator& rightOperand) const
+		{
+			return curr != rightOperand.curr;
+		}
+	protected:
+		pointer curr;
+	};
+
 public:
 	CMyArray() = default;
 
@@ -11,7 +70,18 @@ public:
 		, m_size(size)
 		, m_capacity(size * 2)
 	{
-		memcpy(m_myArray, arr, size);
+		for (int i = 0; i < size; i++)
+		{
+			m_myArray[i] = arr[i];
+		}
+	}
+
+	~CMyArray()
+	{
+		if (m_myArray != nullptr)
+		{
+			delete[] m_myArray;
+		}
 	}
 
 	// Констуктор копирования
@@ -39,15 +109,15 @@ public:
 			return *this;
 		}
 
-		T* reserve = new T[other.Count()];
+		T* reserve = other.m_size != 0 ? new T[other.m_size] : nullptr;
+		for (size_t i = 0; i < other.m_size; i++)
+		{
+			reserve[i] = other[i];
+		}
 		delete[] m_myArray;
-		m_myArray = other.GetArray();
+		m_myArray = reserve;
 		m_size = other.m_size;
 		m_capacity = other.m_capacity;
-		if (other.m_size != 0)
-		{
-			memcpy(m_myArray, other.m_myArray, m_size);
-		}
 
 		return *this;
 	}
@@ -93,8 +163,12 @@ public:
 			}
 			else
 			{
-				CMyArray newArray = CMyArray(m_myArray, m_size);
-				m_myArray = newArray.GetArray();
+				const T* reserve = m_myArray;
+				m_myArray = new T[m_size * 2];
+				for (size_t i = 0; i < m_size; i++)
+				{
+					m_myArray[i] = reserve[i];
+				}
 				m_capacity = m_size * 2;
 			}
 		}
@@ -107,19 +181,58 @@ public:
 	{
 		return m_size;
 	}
-	//void Resize(const size_t index);
-	//void Clear();
 
-	//// Итераторы
-	//CMyArrayIterator begin();
-	//CMyArrayIterator end();
-	//std::reverse_iterator<CMyArrayIterator> rbegin();
-	//std::reverse_iterator<CMyArrayIterator> rend();
+	void Resize(const size_t size)
+	{
+		const T* reserve = m_myArray;
+		const size_t prevSize = m_size;
+		m_myArray = new T[size * 2];
+		m_size = size;
+		m_capacity = size * 2;
+
+		for (size_t i = 0; i < prevSize; i++)
+		{
+			m_myArray[i] = reserve[i];
+		}
+		for (size_t i = prevSize; i < size; i++)
+		{
+			m_myArray[i] = T();
+		}
+		delete[] reserve;
+	}
+
+	void Clear()
+	{
+		delete[] m_myArray;
+		m_myArray = nullptr;
+		m_size = 0;
+		m_capacity = 0;
+	}
 
 	T* GetArray() const
 	{
 		return m_myArray;
 	}
+
+	// Итераторы
+
+	CMyIterator begin()
+	{
+		return m_myArray;
+	}
+	CMyIterator end()
+	{
+		return m_myArray + m_size;
+	}
+	std::reverse_iterator<CMyIterator> rbegin()
+	{
+		return std::make_reverse_iterator(end());
+	}
+	std::reverse_iterator<CMyIterator> rend()
+	{
+		return std::make_reverse_iterator(begin());
+	}
+
 private:
 	T* m_myArray = nullptr;
 	size_t m_size = 0;
