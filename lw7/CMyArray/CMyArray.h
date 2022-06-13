@@ -151,6 +151,21 @@ public:
 		return m_myArray[index];
 	}
 
+	template <class AnotherT>
+	CMyArray<T>& operator=(const CMyArray<AnotherT>& rightOperand)
+	{
+		T* reserve = new T[rightOperand.Count() * 2];
+		m_myArray = reserve;
+		for (size_t i = 0; i < rightOperand.Count(); i++)
+		{
+			m_myArray[i] = static_cast<T>(rightOperand[i]);
+		}
+		m_size = rightOperand.Count();
+		m_capacity = m_size * 2;
+
+		return *this;
+	}
+
 	void Insert(const T& el)
 	{
 		if (m_size == m_capacity)

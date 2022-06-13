@@ -490,3 +490,70 @@ SCENARIO("User has ability to use iterators on array")
 		}
 	}
 }
+
+SCENARIO("User has ability to assign arrays with different elements types")
+{
+	WHEN("User assigns filled double array to filled int array")
+	{
+		CMyArray<double> doubleArr;
+		doubleArr.Insert(3);
+		CMyArray<int> intArr;
+		intArr.Insert(2);
+
+		intArr = doubleArr;
+
+		THEN("Both arrays should contain double elements and should be filled")
+		{
+			REQUIRE(intArr.Count() == 1);
+			REQUIRE(doubleArr.Count() == 1);
+			REQUIRE(intArr[0] == 3);
+			REQUIRE(doubleArr[0] == 3.0);
+		}
+	}
+
+	WHEN("User assigns empty double array to empty int array")
+	{
+		CMyArray<double> doubleArr;
+		CMyArray<int> intArr;
+
+		intArr = doubleArr;
+
+		THEN("Both arrays should be empty")
+		{
+			REQUIRE(intArr.Count() == 0);
+			REQUIRE(doubleArr.Count() == 0);
+		}
+	}
+
+	WHEN("User assigns empty double array to filled int array")
+	{
+		CMyArray<double> doubleArr;
+		CMyArray<int> intArr;
+		intArr.Insert(2);
+
+		intArr = doubleArr;
+
+		THEN("Both arrays should be empty")
+		{
+			REQUIRE(intArr.Count() == 0);
+			REQUIRE(doubleArr.Count() == 0);
+		}
+	}
+
+	WHEN("User assigns filled double array to empty int array")
+	{
+		CMyArray<double> doubleArr;
+		doubleArr.Insert(3.0);
+		CMyArray<int> intArr;
+
+		intArr = doubleArr;
+
+		THEN("Both arrays should be filled")
+		{
+			REQUIRE(intArr.Count() == 1);
+			REQUIRE(doubleArr.Count() == 1);
+			REQUIRE(intArr[0] == 3);
+			REQUIRE(doubleArr[0] == 3.0);
+		}
+	}
+}
