@@ -28,22 +28,22 @@ public:
 	friend CMyIterator operator+(ptrdiff_t diff, const CMyIterator& iterator);
 
 	// ==
-	friend bool const operator==(const CMyIterator& leftOperand, const CMyIterator& rightOperand);
+	friend bool operator==(const CMyIterator& leftOperand, const CMyIterator& rightOperand);
 
 	// !=
-	friend bool const operator!=(const CMyIterator& leftOperand, const CMyIterator& rightOperand);
+	friend bool operator!=(const CMyIterator& leftOperand, const CMyIterator& rightOperand);
 
 	// <
-	friend bool const operator<(const CMyIterator& leftOperand, const CMyIterator& rightOperand);
+	friend bool operator<(const CMyIterator& leftOperand, const CMyIterator& rightOperand);
 
 	// <=
-	friend bool const operator<=(const CMyIterator& leftOperand, const CMyIterator& rightOperand);
+	friend bool operator<=(const CMyIterator& leftOperand, const CMyIterator& rightOperand);
 
 	// >
-	friend bool const operator>(const CMyIterator& leftOperand, const CMyIterator& rightOperand);
+	friend bool operator>(const CMyIterator& leftOperand, const CMyIterator& rightOperand);
 
 	// >=
-	friend bool const operator>=(const CMyIterator& leftOperand, const CMyIterator& rightOperand);
+	friend bool operator>=(const CMyIterator& leftOperand, const CMyIterator& rightOperand);
 
 protected:
 	pointer curr;

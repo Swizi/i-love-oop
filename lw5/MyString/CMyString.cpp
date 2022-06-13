@@ -160,7 +160,7 @@ CMyString operator+(const CMyString& leftOperand, const CMyString& rightOperand)
 }
 
 // +=
-CMyString operator+=(CMyString& leftOperand, const CMyString& rightOperand)
+CMyString& operator+=(CMyString& leftOperand, const CMyString& rightOperand)
 {
 	// Будет некорректно работать так: (a+=b)+=c;
 	leftOperand = leftOperand + rightOperand;

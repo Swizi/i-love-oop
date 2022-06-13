@@ -65,37 +65,37 @@ CMyIterator operator+(ptrdiff_t diff, const CMyIterator& iterator)
 }
 
 // ==
-bool const operator==(const CMyIterator& leftOperand, const CMyIterator& rightOperand)
+bool operator==(const CMyIterator& leftOperand, const CMyIterator& rightOperand)
 {
 	return leftOperand.curr == rightOperand.curr;
 }
 
 // !=
-bool const operator!=(const CMyIterator& leftOperand, const CMyIterator& rightOperand)
+bool operator!=(const CMyIterator& leftOperand, const CMyIterator& rightOperand)
 {
 	return leftOperand.curr != rightOperand.curr;
 }
 
 // <
-bool const operator<(const CMyIterator& leftOperand, const CMyIterator& rightOperand)
+bool operator<(const CMyIterator& leftOperand, const CMyIterator& rightOperand)
 {
 	return leftOperand.curr < rightOperand.curr;
 }
 
 // <=
-bool const operator<=(const CMyIterator& leftOperand, const CMyIterator& rightOperand)
+bool operator<=(const CMyIterator& leftOperand, const CMyIterator& rightOperand)
 {
 	return leftOperand.curr <= rightOperand.curr;
 }
 
 // >
-bool const operator>(const CMyIterator& leftOperand, const CMyIterator& rightOperand)
+bool operator>(const CMyIterator& leftOperand, const CMyIterator& rightOperand)
 {
 	return leftOperand.curr > rightOperand.curr;
 }
 
 // >=
-bool const operator>=(const CMyIterator& leftOperand, const CMyIterator& rightOperand)
+bool operator>=(const CMyIterator& leftOperand, const CMyIterator& rightOperand)
 {
 	return leftOperand.curr >= rightOperand.curr;
 }

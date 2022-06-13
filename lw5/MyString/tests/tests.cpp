@@ -424,19 +424,35 @@ SCENARIO("User has ability to use assignment operations on string")
 			}
 		}
 
-		WHEN("Use addition operation on result of addition operation")
+		WHEN("Use addition operation on result of addition operation as right operand")
 		{
 			CMyString str1("12");
 			CMyString str2("34");
 			CMyString str3("56");
 
 			str1 += (str2 += str3);
-			// (str1 += str2) += str3;
 
 			THEN("+= operation should return concatenation result")
 			{
 				REQUIRE(strcmp(str2.GetStringData(), "3456") == 0);
 				REQUIRE(strcmp(str1.GetStringData(), "123456") == 0);
+				REQUIRE(strcmp(str3.GetStringData(), "56") == 0);
+			}
+		}
+
+		WHEN("Use addition operation on result of addition operation as left operand")
+		{
+			CMyString str1("12");
+			CMyString str2("34");
+			CMyString str3("56");
+
+			(str1 += str2) += str3;
+
+			THEN("+= operation should return concatenation result")
+			{
+				REQUIRE(strcmp(str2.GetStringData(), "34") == 0);
+				REQUIRE(strcmp(str1.GetStringData(), "123456") == 0);
+				REQUIRE(strcmp(str3.GetStringData(), "56") == 0);
 			}
 		}
 	}
