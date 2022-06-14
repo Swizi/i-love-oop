@@ -10,6 +10,8 @@ const std::map<const Protocol, const unsigned short> defaultPorts =
 	{Protocol::HTTPS, 443}
 };
 const std::string DEFAULT_DOCUMENT = "/index.html";
+const unsigned short MIN_AVAILABLE_PORT = 10;
+const unsigned short MAX_AVAILABLE_PORT = 65535;
 
 // Regexps
 
@@ -82,11 +84,11 @@ unsigned short ParsePort(const std::string& url, Protocol protocol)
 			{
 				throw CUrlParsingError("Port can not be negative");
 			}
-			if (portNum < 10)
+			if (portNum < MIN_AVAILABLE_PORT)
 			{
 				throw CUrlParsingError("Port should be greater than 9");
 			}
-			if (portNum > 65535)
+			if (portNum > MAX_AVAILABLE_PORT)
 			{
 				throw CUrlParsingError("Port can not be greater than 65535");
 			}
