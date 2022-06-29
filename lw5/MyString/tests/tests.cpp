@@ -987,6 +987,19 @@ SCENARIO("User can use streams to print and get strings")
 		}
 	}
 
+	WHEN("Use << operation with zero service symbol")
+	{
+		std::ostringstream oss;
+		CMyString str("1\0a2");
+
+		oss << str;
+
+		THEN("String should contain full string with zero service symbol")
+		{
+			REQUIRE(oss.str() == "1\0a2");
+		}
+	}
+
 	WHEN("Use >> operation with not empty string")
 	{
 		std::istringstream iss("123");
@@ -1025,6 +1038,19 @@ SCENARIO("User can use streams to print and get strings")
 		THEN("String variable should contain this value")
 		{
 			REQUIRE(strcmp(str.GetStringData(), "") == 0);
+		}
+	}
+
+	WHEN("Use >> operation with string, that contains zero service symbol")
+	{
+		std::istringstream iss("1\0a2");
+		CMyString str;
+
+		iss >> str;
+
+		THEN("String should contain zero service symbol")
+		{
+			REQUIRE(memcmp(str.GetStringData(), "1\0a2", str.GetLength()) == 0);
 		}
 	}
 }

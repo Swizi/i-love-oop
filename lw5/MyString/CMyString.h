@@ -56,16 +56,16 @@ public:
 	char& operator[](const size_t index);
 
 	// CMyIterator
-	CMyIterator begin();
-	CMyIterator end();
-	std::reverse_iterator<CMyIterator> rbegin();
-	std::reverse_iterator<CMyIterator> rend();
+	CMyIterator begin() const;
+	CMyIterator end() const;
+	std::reverse_iterator<CMyIterator> rbegin() const;
+	std::reverse_iterator<CMyIterator> rend() const;
 
 	// CMyConstIterator
-	CMyConstIterator cbegin();
-	CMyConstIterator cend();
-	std::reverse_iterator<CMyConstIterator> crbegin();
-	std::reverse_iterator<CMyConstIterator> crend();
+	CMyConstIterator cbegin() const;
+	CMyConstIterator cend() const;
+	std::reverse_iterator<CMyConstIterator> crbegin() const;
+	std::reverse_iterator<CMyConstIterator> crend() const;
 
 private:
 	char* m_string;

@@ -286,43 +286,43 @@ std::istream& operator>>(std::istream& in, CMyString& str)
 
 // CMyIterator
 
-CMyIterator CMyString::begin()
+CMyIterator CMyString::begin() const
 {
 	return m_string;
 }
 
-CMyIterator CMyString::end()
+CMyIterator CMyString::end() const
 {
 	return m_string + m_stringSize;
 }
 
-std::reverse_iterator<CMyIterator> CMyString::rbegin()
+std::reverse_iterator<CMyIterator> CMyString::rbegin() const
 {
 	return std::make_reverse_iterator(end());
 }
 
-std::reverse_iterator<CMyIterator> CMyString::rend()
+std::reverse_iterator<CMyIterator> CMyString::rend() const
 {
 	return std::make_reverse_iterator(begin());
 }
 
 // CMyConstIterator
 
-CMyConstIterator CMyString::cbegin()
+CMyConstIterator CMyString::cbegin() const
 {
 	return m_string;
 }
-CMyConstIterator CMyString::cend()
+CMyConstIterator CMyString::cend() const
 {
 	return m_string + m_stringSize;
 }
 
-std::reverse_iterator<CMyConstIterator> CMyString::crbegin()
+std::reverse_iterator<CMyConstIterator> CMyString::crbegin() const
 {
 	return std::make_reverse_iterator(cend());
 }
 
-std::reverse_iterator<CMyConstIterator> CMyString::crend()
+std::reverse_iterator<CMyConstIterator> CMyString::crend() const
 {
 	return std::make_reverse_iterator(cbegin());
 }
