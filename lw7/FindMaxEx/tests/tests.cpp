@@ -14,7 +14,7 @@ SCENARIO("Function can find max element in not empty array")
 			{"Alexanded Konkov Alexandrovich", 188, 90}
 		};
 		Sportsman maxValue;
-		const bool result = FindMax(arr, maxValue, CompareLessHeight);
+		const bool result = FindMax(arr, maxValue, GetMinHeight);
 
 		THEN("Function can find max in arr")
 		{
@@ -46,7 +46,7 @@ SCENARIO("Function can find max element in not empty array")
 			{"Alexanded Konkov Alexandrovich", 188, 90}
 		};
 		Sportsman maxValue;
-		const bool result = FindMax(arr, maxValue, CompareLessWeight);
+		const bool result = FindMax(arr, maxValue, GetMinWeight);
 
 		THEN("Function can find max in arr")
 		{
@@ -61,7 +61,7 @@ SCENARIO("Function can find max element in not empty array")
 			{"Ivan Petrov Grigoriyevich", 180, 90}
 		};
 		Sportsman maxValue;
-		const bool result = FindMax(arr, maxValue, CompareLessWeight);
+		const bool result = FindMax(arr, maxValue, GetMinWeight);
 
 		THEN("Function should return this element")
 		{
@@ -76,7 +76,7 @@ SCENARIO("Function can find max element in not empty array")
 			{"Ivan Petrov Grigoriyevich", 180, 90}
 		};
 		Sportsman maxValue;
-		const bool result = FindMax(arr, maxValue, CompareLessHeight);
+		const bool result = FindMax(arr, maxValue, GetMinHeight);
 
 		THEN("Function should return this element")
 		{
@@ -107,7 +107,7 @@ SCENARIO("Function can't find max element in empty array")
 	{
 		const std::vector<Sportsman> arr = {};
 		Sportsman maxValue;
-		const bool result = FindMax(arr, maxValue, CompareLessWeight);
+		const bool result = FindMax(arr, maxValue, GetMinWeight);
 
 		THEN("Function should return false")
 		{

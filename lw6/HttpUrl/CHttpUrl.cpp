@@ -15,6 +15,7 @@ const unsigned short MAX_AVAILABLE_PORT = 65535;
 
 // Regexps
 
+// TODO: URL = Protocol + Domain + ...
 // Url
 const boost::regex urlRegexp("(?:(?:(?:http[s]?):)?\\/\\/)(?:(?!(?:10|127)(?:\\.\\d{1,3}){3})(?!(?:169\\.254|192\\.168)(?:\\.\\d{1,3}){2})(?!172\\.(?:1[6-9]|2\\d|3[0-1])(?:\\.\\d{1,3}){2})(?:[1-9]\\d?|1\\d\\d|2[01]\\d|22[0-3])(?:\\.(?:1?\\d{1,2}|2[0-4]\\d|25[0-5])){2}(?:\\.(?:[1-9]\\d?|1\\d\\d|2[0-4]\\d|25[0-4]))|(?:(?:[a-z0-9\\u00a1-\\uffff][a-z0-9\\u00a1-\\uffff_-]{0,62})?[a-z0-9\\u00a1-\\uffff]\\.)+(?:[a-z\\u00a1-\\uffff]{2,}\\.?))(?:[/?#]\\S*)?(?:[/?#]\\S*)?", boost::regex_constants::ECMAScript);
 // Protocols
@@ -63,7 +64,6 @@ unsigned short ParsePort(const std::string& url, Protocol protocol)
 {
 	unsigned short port = defaultPorts.count(protocol) ? defaultPorts.at(protocol) : DEFAULT_PORT;
 	boost::smatch portSm;
-	boost::smatch domainSm;
 
 	const bool isPortExists = boost::regex_search(url, portSm, portRegexp);
 	if (!isPortExists)
@@ -74,11 +74,13 @@ unsigned short ParsePort(const std::string& url, Protocol protocol)
 	{
 		throw CUrlParsingError("Number of ports in url should be equals to one");
 	}
+	// TODO: portSm.size() == 1 не нужен
 	if (portSm.size() == 1)
 	{
 		const std::string portStr = std::string(portSm[0].first+1, portSm[0].second);
 		if (portStr.size() != 0)
 		{
+			// TODO: обрабатывать исключение stoi
 			const int portNum = std::stoi(portStr.c_str());
 			if (portNum < 0)
 			{
@@ -115,6 +117,7 @@ std::string ParseDomain(const std::string& url)
 		throw CUrlParsingError("Number of domains in url should be equals to one");
 	}
 	std::string str = std::string(domainSm[0].first, domainSm[0].second);
+	// TODO: вынести offset в функцию
 	size_t offset = 0;
 	if (boost::regex_search(str, portSm, portRegexp))
 	{
@@ -135,8 +138,10 @@ Protocol ParseProtocol(const std::string& url)
 	{
 		throw CUrlParsingError("Protocol is incorrect");
 	}
+	// if !isProtocolExists -> return
 	if (isProtocolExists)
 	{
+		// protocolSm.size() != 1 -> throw
 		if (protocolSm.size() == 1)
 		{
 			if (std::string(protocolSm[0].first, protocolSm[0].second) != "http://" && std::string(protocolSm[0].first, protocolSm[0].second) != "https://")

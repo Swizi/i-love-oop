@@ -19,6 +19,7 @@ CStringList::CStringList(const CStringList& other)
     });
 }
 
+// TODO: Вынести проверку на 24 строке в функцию
 CStringList::CStringList(CStringList&& other) noexcept
     : m_head(other.GetHead() ? other.GetHead()->GetPrev() : other.GetHead())
     , m_tail(other.GetTail())
@@ -53,16 +54,18 @@ CStringList::CStringList(std::initializer_list<std::string> initVector)
 {
     std::for_each(initVector.begin(), initVector.end(), [&](const std::string& el)
     {
-            this->InsertToEnd(el);
+        this->InsertToEnd(el);
     });
 }
 
 void CStringList::InsertToBegin(const std::string& str)
 {
+    // TODO: С
     if (m_head == nullptr)
     {
         *this = CStringList();
     }
+
     CNode newNode = CNode(str);
     NodePtr newNodePtr = std::make_shared<CNode>(newNode);
     if (m_head == m_tail)
@@ -82,6 +85,7 @@ void CStringList::InsertToEnd(const std::string& str)
     {
         *this = CStringList();
     }
+
     CNode newNode = CNode(str);
     NodePtr newNodePtr = std::make_shared<CNode>(newNode);
     (*newNodePtr).SetNext(m_head);
@@ -104,6 +108,7 @@ bool CStringList::IsEmpty() const
 
 void CStringList::Clear()
 {
+    // TODO: Разобраться с разрушением памяти
     while (m_size != 0)
     {
         m_head = (*m_head).GetNext();
@@ -149,6 +154,7 @@ NodePtr CStringList::GetTail() const
     return m_tail;
 }
 
+// TODO: Сделать сеттеры приватными
 void CStringList::SetHead(const NodePtr head)
 {
     m_head = head;

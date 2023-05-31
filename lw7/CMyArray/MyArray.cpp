@@ -7,7 +7,7 @@ int main()
 	CMyArray<std::string> stringArray;
 	stringArray.Insert("i");
 	stringArray.Insert("love");
-	stringArray.Insert("you");
+	stringArray.Insert("oop");
 	for (auto const& str: stringArray)
 	{
 		std::cout << str << std::endl;

@@ -15,6 +15,10 @@ SCENARIO("User has ability to create list")
 			REQUIRE(list.IsEmpty() == true);
 		}
 	}
+
+	// TODO: Добавить провеку на initializer_list
+
+	//CStringList list{ "1", "2", "3" };
 }
 
 SCENARIO("User has ability to add items to list")
@@ -54,6 +58,7 @@ SCENARIO("User has ability to add items to list")
 
 		THEN("List should contain two elements")
 		{
+			// TODO: Добавить проверку на правильный порядок
 			REQUIRE(list.GetSize() == 2);
 			REQUIRE(list.IsEmpty() == false);
 		}
@@ -435,6 +440,7 @@ SCENARIO("User has ability to use reverse iterators")
 
 SCENARIO("User has ability to use move constructor and move assignment operator")
 {
+	// TODO: Добавить проверку перемещённого объекта
 	GIVEN("Move constructor")
 	{
 		WHEN("Move exactly from constructor")
@@ -474,6 +480,7 @@ SCENARIO("User has ability to use move constructor and move assignment operator"
 
 	GIVEN("Move assignment operation")
 	{
+		// TODO: Добавить перемещение самого себя
 		WHEN("Move from variable")
 		{
 			CStringList sourceList({ "i love JS!" });

@@ -1,7 +1,7 @@
 #define CATCH_CONFIG_MAIN
 #include "../../../Catch2/catch.hpp"
 #include "../CCar.h"
-#include "../CController.h";
+#include "../CController.h"
 
 SCENARIO("Initial information about the car")
 {
@@ -57,6 +57,7 @@ SCENARIO("Car can be turned on and off")
 		{
 			std::string errorMsg = "";
 			car.TurnOffEngine(errorMsg);
+			// Speed = 0, gear = 0
 
 			THEN("Car engine becomes turned off")
 			{
@@ -89,6 +90,8 @@ SCENARIO("Car can change gear")
 					car.SetGear(0, errorMsgs[1]);
 					car.SetGear(1, errorMsgs[2]);
 
+					// В тестах проверять, что метод вернул
+					// checklist есть пример, как проверять
 					{
 						INFO("Car can not change gear to reverse");
 						REQUIRE(errorMsgs[0].empty());

@@ -5,9 +5,11 @@
 template <typename T>
 class CMyArray
 {
+	// TODO: пользователь должен иметь возможность объявить итератор самостоятельно
 	class CMyIterator
 	{
 	public:
+		// TODO: заменить forward_iterator_tag
 		using iterator_category = std::forward_iterator_tag;
 		using difference_type = std::ptrdiff_t;
 		using value_type = T;
@@ -40,10 +42,14 @@ class CMyArray
 			return --curr;
 		}
 
+		// TODO: добавить операторы + - += -=
+
+		// TODO: метод должен быть константным
 		reference operator*()
 		{
 			return *curr;
 		}
+		// TODO: метод должен быть константным
 		pointer operator->()
 		{
 			return curr;
@@ -53,12 +59,14 @@ class CMyArray
 		{
 			return *(curr + diff);
 		}
+		// TODO: добавить все виды сравнения
 
 		bool operator!=(const CMyIterator& rightOperand) const
 		{
 			return curr != rightOperand.curr;
 		}
 	protected:
+		// TODO: m_curr
 		pointer curr;
 	};
 
@@ -70,6 +78,9 @@ public:
 		, m_size(size)
 		, m_capacity(size * 2)
 	{
+		// TODO: new T[] конструирует, а нужно просто выделять память
+		// TODO: placement new
+		// TODO: construct_at
 		for (int i = 0; i < size; i++)
 		{
 			m_myArray[i] = arr[i];
@@ -98,6 +109,7 @@ public:
 	{
 		other.m_myArray = nullptr;
 		other.m_size = 0;
+		// TODO: other.m_capacity
 	}
 
 	// Перегруженные операторы
@@ -112,6 +124,7 @@ public:
 		T* reserve = other.m_size != 0 ? new T[other.m_size] : nullptr;
 		for (size_t i = 0; i < other.m_size; i++)
 		{
+			// TODO: = может выбросить исключение, утечка памяти
 			reserve[i] = other[i];
 		}
 		delete[] m_myArray;
@@ -158,6 +171,7 @@ public:
 		m_myArray = reserve;
 		for (size_t i = 0; i < rightOperand.Count(); i++)
 		{
+			// TODO: = может выбросить исключение, утечка памяти
 			m_myArray[i] = static_cast<T>(rightOperand[i]);
 		}
 		m_size = rightOperand.Count();
@@ -182,6 +196,7 @@ public:
 				m_myArray = new T[m_size * 2];
 				for (size_t i = 0; i < m_size; i++)
 				{
+					// TODO: утечка памяти
 					m_myArray[i] = reserve[i];
 				}
 				m_capacity = m_size * 2;
@@ -199,6 +214,7 @@ public:
 
 	void Resize(const size_t size)
 	{
+		// TODO: освободить ненужные объекты в памяти
 		const T* reserve = m_myArray;
 		const size_t prevSize = m_size;
 		m_myArray = new T[size * 2];
@@ -222,6 +238,7 @@ public:
 		m_myArray = nullptr;
 		m_size = 0;
 		m_capacity = 0;
+		// TODO: m_capacity оставлять прежним
 	}
 
 	T* GetArray() const
@@ -239,6 +256,7 @@ public:
 	{
 		return m_myArray + m_size;
 	}
+	// TODO: добавить константные итераторы
 	std::reverse_iterator<CMyIterator> rbegin()
 	{
 		return std::make_reverse_iterator(end());

@@ -8,5 +8,5 @@ struct Sportsman
 	size_t weight;
 };
 
-bool CompareLessHeight(const Sportsman& left, const Sportsman& right);
-bool CompareLessWeight(const Sportsman& left, const Sportsman& right);
+bool GetMinHeight(const Sportsman& left, const Sportsman& right);
+bool GetMinWeight(const Sportsman& left, const Sportsman& right);

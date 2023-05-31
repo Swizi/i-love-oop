@@ -1,7 +1,8 @@
 #pragma once
-#include <istream>
+#include <sstream>
 #include <functional>
 #include <map>
+#include <iomanip>
 
 class CCalculator;
 
@@ -20,17 +21,16 @@ private:
 	bool PrintFunctions(std::istream& args);
 	bool Help(std::istream& args);
 
-	struct Expression
+	struct Args
 	{
 		std::string identiferName;
-		char operation;
+		char operation = NULL;
 		std::string firstOperand;
 		std::string secondOperand;
 	};
 
-	std::vector<std::string> ParseExpression(std::istream& args);
+	Args ParseArgs(std::istream& args);
 
-private:
 	using Handler = std::function<bool(std::istream & args)>;
 
 	using ActionMap = std::map<std::string, Handler>;

@@ -1,18 +1,16 @@
-#include "Calculator.h";
+#include "Calculator.h"
 
 CCalculator::CCalculator()
 {
-
 }
 
 CCalculator::~CCalculator()
 {
-
 }
 
 // Public
 
-bool CCalculator::CreateVar(const std::string& varName)
+bool CCalculator::CreateVar(const std::string& varName, std::string& errorMsg)
 {
 	if (m_vars.count(varName) == 0)
 	{
@@ -20,25 +18,33 @@ bool CCalculator::CreateVar(const std::string& varName)
 	}
 	else
 	{
+		errorMsg = "Variable name is already busy";
 		return false;
 	}
 
 	return true;
 }
 
-bool CCalculator::CreateFunction(const std::string& functionName, const std::string& expression)
+bool CCalculator::CreateFunction(const std::string& functionName, const FunctionExpression& expression, std::string& errorMsg)
 {
 	if (m_functions.count(functionName) != 0 || m_vars.count(functionName) != 0)
 	{
+		errorMsg = "Function name is already busy";
 		return false;
 	}
 
-	m_functions.insert(std::pair<std::string, std::string>(functionName, expression));
+	m_functions.insert(std::pair<std::string, FunctionExpression>(functionName, expression));
+	double functionValue = CCalculator::CalculateFunctionValue(functionName, errorMsg);//игнорируй, если не используешь
+	if (!errorMsg.empty())
+	{
+		m_functions.erase(functionName);
+		return false;
+	}
 
 	return true;
 }
 
-double CCalculator::GetIdentifierValue(const std::string& identifierName)
+double CCalculator::GetIdentifierValue(const std::string& identifierName, std::string& errorMsg)
 {
 	if (m_vars.count(identifierName) != 0)
 	{
@@ -47,13 +53,21 @@ double CCalculator::GetIdentifierValue(const std::string& identifierName)
 
 	if (m_functions.count(identifierName) != 0)
 	{
-		return CalculateFunctionValue(identifierName);
+		double functionValue = CalculateFunctionValue(identifierName, errorMsg);
+
+		if (!errorMsg.empty())
+		{
+			return NAN;
+		}
+
+		return functionValue;
 	}
 
+	errorMsg = "Identifier is not exists";
 	return NAN;
 }
 
-bool CCalculator::AssignVarValue(const std::string& varName, const std::string& value)
+bool CCalculator::AssignVarValue(const std::string& varName, const std::string& value, std::string& errorMsg)
 {
 	try
 	{
@@ -63,10 +77,12 @@ bool CCalculator::AssignVarValue(const std::string& varName, const std::string& 
 	{
 		if (m_vars.count(value) == 0)
 		{
+			errorMsg = "Incorrect value";
 			return false;
 		}
 	}
 
+	//TODO: use Create Var
 	if (m_vars.count(varName) == 0)
 	{
 		m_vars.insert(std::pair<std::string, double>(varName, NAN));
@@ -94,7 +110,10 @@ std::map<std::string, double> CCalculator::GetFunctions()
 
 	for (auto const &fn : m_functions)
 	{
-		calculatedFunctions.insert(std::pair<std::string, double>(fn.first, GetIdentifierValue(fn.first)));
+		std::string errorMsg = "";
+		double identifierValue = GetIdentifierValue(fn.first, errorMsg);
+
+		calculatedFunctions.insert(std::pair<std::string, double>(fn.first, identifierValue));
 	}
 
 	return calculatedFunctions;
@@ -102,40 +121,31 @@ std::map<std::string, double> CCalculator::GetFunctions()
 
 // Private
 
-double CCalculator::CalculateFunctionValue(const std::string& functionName)
+double CCalculator::CalculateFunctionValue(const std::string& functionName, std::string& errorMsg)
 {
 	if (m_functions.count(functionName) == 0)
 	{
+		errorMsg = "Function is not exists";
 		return NAN;
 	}
 
-	const std::string functionExpression = m_functions[functionName];
-	int operatorIndex = -1;
-	for (auto const &oper : m_operators)
+	const FunctionExpression functionExpression = m_functions[functionName];
+	if (!functionExpression.secondOperand.empty())
 	{
-		int currOperatorIndex = functionExpression.find(oper);
-
-		if (functionExpression.find(oper) != std::string::npos)
-		{
-			operatorIndex = currOperatorIndex;
-		}
-	}
-
-	if (operatorIndex != -1)
-	{
-		const std::string firstOperand = functionExpression.substr(0, operatorIndex);
-		const std::string secondOperand = functionExpression.substr(operatorIndex + 1, functionExpression.length());
+		//TODO: rewrite method
+		const std::string firstOperand = functionExpression.firstOperand;
+		const std::string secondOperand = functionExpression.secondOperand;
 		bool firstIdentiferIsDeclared = m_vars.count(firstOperand) != 0 || m_functions.count(firstOperand) != 0;
 		bool secondIdentifierIsDeclared = m_vars.count(secondOperand) != 0 || m_functions.count(secondOperand) != 0;
 
-		if (!firstIdentiferIsDeclared || !secondIdentifierIsDeclared)
+		if (!firstIdentiferIsDeclared || !secondIdentifierIsDeclared)//TODO: use AND
 		{
 			try
 			{
 				double firstDoubleValue = std::stod(firstOperand);
 				double secondDoubleValue = std::stod(secondOperand);
 
-				switch (functionExpression[operatorIndex])
+				switch (functionExpression.operation)
 				{
 				case '+':
 					return firstDoubleValue + secondDoubleValue;
@@ -150,6 +160,7 @@ double CCalculator::CalculateFunctionValue(const std::string& functionName)
 					}
 					else
 					{
+						errorMsg = "Can not divide to 0";
 						return NAN;
 					}
 				default:
@@ -158,27 +169,37 @@ double CCalculator::CalculateFunctionValue(const std::string& functionName)
 			}
 			catch (std::exception & e)
 			{
+				errorMsg = "Incorrect values in expression";
 				return NAN;
 			}
-			return NAN;
 		}
 
-		double secondIdentifierValue = GetIdentifierValue(secondOperand);
-		switch (functionExpression[operatorIndex])
+		double firstIdentifierValue = GetIdentifierValue(firstOperand, errorMsg);
+		if (!errorMsg.empty())
+		{
+			return NAN;
+		}
+		double secondIdentifierValue = GetIdentifierValue(secondOperand, errorMsg);
+		if (!errorMsg.empty())
+		{
+			return NAN;
+		}
+		switch (functionExpression.operation)
 		{
 		case '+':
-			return GetIdentifierValue(firstOperand) + secondIdentifierValue;
+			return firstIdentifierValue + secondIdentifierValue;
 		case '-':
-			return GetIdentifierValue(firstOperand) - secondIdentifierValue;
+			return firstIdentifierValue - secondIdentifierValue;
 		case '*':
-			return GetIdentifierValue(firstOperand) * secondIdentifierValue;
+			return firstIdentifierValue * secondIdentifierValue;
 		case '/':
 			if (secondIdentifierValue != 0)
 			{
-				return GetIdentifierValue(firstOperand) / secondIdentifierValue;
+				return firstIdentifierValue / secondIdentifierValue;
 			} 
 			else
 			{
+				errorMsg = "Can not divide to 0";
 				return NAN;
 			}
 		default:
@@ -187,20 +208,35 @@ double CCalculator::CalculateFunctionValue(const std::string& functionName)
 	}
 	else
 	{
-		if (m_vars.count(functionExpression) != 0 || m_functions.count(functionExpression) != 0)
+		if (m_vars.count(functionExpression.firstOperand) != 0 || m_functions.count(functionExpression.firstOperand) != 0)
 		{
-			return GetIdentifierValue(functionExpression);
+			double result = GetIdentifierValue(functionExpression.firstOperand, errorMsg);
+			if (!errorMsg.empty())
+			{
+				return NAN;
+			}
+			return result;
 		}
 
 		try
 		{
-			double doubleValue = std::stod(functionExpression);
+			double doubleValue = std::stod(functionExpression.firstOperand);
 
 			return doubleValue;
 		}
 		catch (std::exception& e)
 		{
+			errorMsg = "Function expression is incorrect";
 			return NAN;
 		}
 	}
+
+	return NAN;
+}
+
+std::vector<char> CCalculator::GetSupportedOperations() const
+{
+	CCalculator calculator = CCalculator();
+
+	return calculator.m_operations;
 }

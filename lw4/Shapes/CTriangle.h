@@ -7,6 +7,7 @@ class CTriangle: public IClosedShape
 public:
 	CTriangle(const CPoint points[3], const uint32_t outlineColor = MIN_HEX_COLOR, const uint32_t fillColor = MAX_HEX_COLOR);
 	~CTriangle() {};
+	// убрать override, если есть final
 	double GetArea() const override final;
 	double GetPerimeter() const override final;
 	uint32_t GetFillColor() const override final;

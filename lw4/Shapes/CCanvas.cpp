@@ -1,6 +1,7 @@
 #include "CCanvas.h"
 #include "common_libs.h"
 
+// Сделать, чтобы рисунок не плющило
 sf::Color GetColor(uint32_t color)
 {
 	uint32_t blue = color % 256;
@@ -13,6 +14,7 @@ sf::Color GetColor(uint32_t color)
 CCanvas::CCanvas(sf::RenderWindow& window):
 	m_window(window)
 {
+	// Принимать RenderTarget
 }
 
 CCanvas::~CCanvas()

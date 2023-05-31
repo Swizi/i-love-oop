@@ -9,6 +9,12 @@
 #include "../CTriangle.h"
 #include "../CRectangle.h"
 
+// APPROX заменить
+bool double_equals(double a, double b, double epsilon = 0.01)
+{
+	return std::abs(a - b) < epsilon;
+}
+
 // Standard tests
 SCENARIO("Program has ability to create lines")
 {
@@ -57,7 +63,7 @@ SCENARIO("Program has ability to create circles")
 		{
 			THEN("It should return PI * 30^2")
 			{
-				REQUIRE(circle.GetArea() == M_PI * 30 * 30);
+				REQUIRE(double_equals(circle.GetArea(), M_PI * 30 * 30));
 			}
 		}
 
@@ -65,7 +71,7 @@ SCENARIO("Program has ability to create circles")
 		{
 			THEN("It should return 2 * PI * R")
 			{
-				REQUIRE(circle.GetPerimeter() == 2 * M_PI * 30);
+				REQUIRE(double_equals(circle.GetPerimeter(), 2 * M_PI * 30));
 			}
 		}
 
@@ -122,7 +128,7 @@ SCENARIO("Program has ability to create triangles")
 		{
 			THEN("Area should be 300")
 			{
-				REQUIRE(triangle.GetArea() == 300.0);
+				REQUIRE(double_equals(triangle.GetArea(), 300.0));
 			}
 		}
 
@@ -130,7 +136,7 @@ SCENARIO("Program has ability to create triangles")
 		{
 			THEN("Perimeter should be 80.64")
 			{
-				REQUIRE(round(triangle.GetPerimeter() * 100) / 100 == 80.64);
+				REQUIRE(double_equals(triangle.GetPerimeter(), 80.64));
 			}
 		}
 
@@ -187,7 +193,7 @@ SCENARIO("Program has ability to create rectangles")
 		{
 			THEN("It should return 600")
 			{
-				REQUIRE(rectangle.GetArea() == 600.0);
+				REQUIRE(double_equals(rectangle.GetArea(), 600));
 			}
 		}
 
@@ -195,7 +201,7 @@ SCENARIO("Program has ability to create rectangles")
 		{
 			THEN("It should return 100")
 			{
-				REQUIRE(rectangle.GetPerimeter() == 100.0);
+				REQUIRE(double_equals(rectangle.GetPerimeter(), 100));
 			}
 		}
 

@@ -44,6 +44,9 @@ bool CController::HandleCommand()
 	return false;
 }
 
+// void
+// Get -> Print
+// const method
 bool CController::GetShapesInfo()
 {
 	auto maxAreaShapeIt = std::min_element(m_closedShapes.begin(), m_closedShapes.end(),
@@ -149,7 +152,8 @@ bool CController::HandleRectangle(std::istream& args)
 {
 	CController::RectangleArgs parsedArgs = ParseRectangleArgs(args);
 
-	CRectangle rectangle = CRectangle(parsedArgs.leftTopPoint, parsedArgs.width, parsedArgs.height, parsedArgs.outlineColor, parsedArgs.fillColor);
+	CRectangle rectangle = CRectangle(parsedArgs.leftTopPoint, parsedArgs.width, parsedArgs.height,
+		parsedArgs.outlineColor, parsedArgs.fillColor);
 	m_shapes.push_back(std::make_unique<CRectangle>(rectangle));
 	m_closedShapes.push_back(std::make_unique<CRectangle>(rectangle));
 
@@ -377,6 +381,13 @@ CController::RectangleArgs CController::ParseRectangleArgs(std::istream& args)
 
 CController::CircleArgs CController::ParseCircleArgs(std::istream& args)
 {
+	//double radius, x, y;
+	//if (!(args >> radius >> x >> y))
+	//{
+	//}
+
+	// убрать try catch( уменьшить )
+	// stringstream
 	std::string argsString;
 	std::getline(args, argsString);
 	const std::vector<std::string> splittedArgs = split(argsString, ' ');
